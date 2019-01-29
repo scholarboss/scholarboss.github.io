@@ -263,14 +263,14 @@
 <li>将数据从GPU内存传回到CPU内存</li>
 </ol>
 <h3 id="1-1-内存管理"><a href="#1-1-内存管理" class="headerlink" title="1.1 内存管理"></a>1.1 内存管理</h3><p>CUDA编程模型是由主机和设备组成，各自拥有独立的内存。为了使操作者拥有充分的控制权并使系统达到最佳性能，CUDA运行时负责分配与释放内存，并且在主机与设备内存之间传输数据。内存管理函数如下：</p>
-<p><img src="./week2-memory.png" alt="图一.内存管理函数"></p>
+<p><img src="/2019/01/31/2019-周报2/./week2-memory.png" alt="图一.内存管理函数"></p>
 <p>设备端的内存只有核函数能够读取，使用<code>udaMemcpy()</code>函数在主机与设备之间进行数据转移，如上面的4个步骤提到的，通常都是将主机端的数据拷贝到设备端，调用核函数对设备端的数据进行计算，再将计算之后的结果拷贝回主机端进行存储。</p>
 <h3 id="1-2-线程管理"><a href="#1-2-线程管理" class="headerlink" title="1.2 线程管理"></a>1.2 线程管理</h3><p>线程管理是CUDA编程很重要的一个概念，从逻辑层的角度来看，GPU中各个线程并行进行（硬件层不一定都是并行）。CUDA的特点之一就是通过编程模型揭示了一个两层线程层次结构（grid+block），充分熟悉与理解线程层次结构对DUDA编程十分重要。</p>
 <p>每启动一个核函数就会在设备中产生大量的线程，并且每个线程都执行由核函数指定的语句，产生的大量线程便是两层的线程结构进行管理，由线程块(block)与线程网格(grid)构成</p>
-<p><img src="./week2-thread_level.png" alt="图二.线程结构"></p>
+<p><img src="/2019/01/31/2019-周报2/./week2-thread_level.png" alt="图二.线程结构"></p>
 <p>每启动一个核函数，就同时启动了一个网格(grid)，网格最多可以为三维，维度值的最大值由硬件决定，我们服务器上的 GeForce GTX 1080 Ti 支持的最大网格维数为<code>1D=(131072), 2D=(131072,65536), 3D=(16384,16384,16384)</code> ，网格由块组成，这便是线程结构的第一层。块由线程组成，这便是第二层。他们的层次结构为: 网格(grid)–&gt;块(block)–&gt;线程(thread)</p>
 <h3 id="1-3-设备管理"><a href="#1-3-设备管理" class="headerlink" title="1.3 设备管理"></a>1.3 设备管理</h3><p>前面说到了在逻辑层来说，各个线程都是并行运行的，但是在硬件层并不一定，并没有那么多的硬件资源供所有线程并行运行。设备管理需要清楚当前硬件的资源情况，对于程序的优化十分重要，设备管理需要对GPU的架构有一定了解，NVIDIA目前推出的最新架构为Turing，实验室服务器使用的 GeForce GTX 1080 Ti为Pascal架构，其资源如下图所示：</p>
-<p><img src="./week2-device.png" alt="图3.设备资源"></p>
+<p><img src="/2019/01/31/2019-周报2/./week2-device.png" alt="图3.设备资源"></p>
 <p>参数中</p>
 <ul>
 <li>Warp size:                                     32</li>
@@ -285,10 +285,10 @@
 </ul>
 <h1 id="2-基于深度学习的人脸识别算法"><a href="#2-基于深度学习的人脸识别算法" class="headerlink" title="2 基于深度学习的人脸识别算法"></a>2 基于深度学习的人脸识别算法</h1><p>深度学习的人脸识别算法准确度大大地高于传统算法，准确度早已超过了人工识别准确率(DeepFace: 92.5%, DeepID:  99.15%, FaceNet-NN3: 99.65% , LFW数据集测试结果)，所以现在深度学习在人脸识别方面的研究除了提高准确率之外还致力于裁剪网络结构，减小参数(VGGFace)</p>
 <h3 id="2-1-DeepFace"><a href="#2-1-DeepFace" class="headerlink" title="2.1 DeepFace"></a>2.1 DeepFace</h3><p>人脸识别可分为 detect-&gt; align-&gt; represent-&gt; classify 几个部分,DeepFace在align部分使用了3D对齐技术，将检测到的人脸进行3D-aligned处理之后再放入网络中进行识别。网络结构如下图所示</p>
-<p><img src="./week2-DeepFaceArchitecture.png" alt="图4.DeepFace网络结构"></p>
+<p><img src="/2019/01/31/2019-周报2/./week2-DeepFaceArchitecture.png" alt="图4.DeepFace网络结构"></p>
 <p>从图中可以看出，检测到的是侧脸，经过3D-aligned处理之后面部调整为正面，讲调整后的图像输入网络。网络C1, C3表示卷积层，M2为max pooling层，L4, L5, L6为局部卷积层，F7, F8为全连接层。</p>
 <h3 id="2-2-DeepID"><a href="#2-2-DeepID" class="headerlink" title="2.2 DeepID"></a>2.2 DeepID</h3><p>DeepID是在GoogleNet和VGGNet上的基础上进行改进，使之适应于人脸识别，网络有一代和二代两种，两种网络的区别主要在于损失函数的定义。常用的为DeepID2的损失函数，除了采用softmax训练构建分类器时产生的交叉熵函数之外，还添加了关于两张图片是不是一个人的损失函数，两个损失函数按权重组合，最终生成了对应的总损失函数用来进行训练，网络结构如下：</p>
-<p><img src="./week2-DeepIDArchitecture.png" alt="图5.DeepID网络机构"></p>
+<p><img src="/2019/01/31/2019-周报2/./week2-DeepIDArchitecture.png" alt="图5.DeepID网络机构"></p>
 <p>相比DeepFace，DeepID3的网络结构更深，且没有使用3D对齐技术，直接输入检测到的人脸图像进行识别。</p>
 <h3 id="2-3-FaceNet"><a href="#2-3-FaceNet" class="headerlink" title="2.3 FaceNet"></a>2.3 FaceNet</h3><p>FaceNetFaceNet是谷歌提出的网络结构, 网络在使用的过程中通过三元对来构造损失函数，直接根据学习到的特征向量，计算在一类的图片距离和不在一类的图片距离，训练的结果是一类之间的距离尽量小，不一类之间的距离尽量大。</p>
 <h3 id="2-4-VGGFace"><a href="#2-4-VGGFace" class="headerlink" title="2.4 VGGFace"></a>2.4 VGGFace</h3><p>VGGFace的网络在LFW数据集上的准确率为98.95%，虽然不及FaceID和FaceNet，但是网络结构更加简单，有更强的鲁棒性</p>
@@ -308,7 +308,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjrhqtc7l0001z0u7vh9m9ca9" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjrhr2i2x0004tsu76tooso5e" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding

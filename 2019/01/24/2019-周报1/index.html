@@ -257,12 +257,12 @@
             <p>本周对视频编解码的几种框架进行了比较，给出了初步的方案设计，人脸识别方面，查阅了相关论文，对二十世纪七十年代至今的各种人脸识别算法做了总结，具体情况如下。</p>
 <h1 id="1-视频编解码方案设计"><a href="#1-视频编解码方案设计" class="headerlink" title="1 视频编解码方案设计"></a>1 视频编解码方案设计</h1><p>​    视频编解码部分，现已确定编码使用<strong>hevc-nvenc</strong>编码器，解码使用<strong>hevc-cuvid</strong>解码器，拼接使用CUDA编程在GPU内实现。关键在于使用哪个框架使得编程实现最方便，以下是几种编解码方案的介绍及对比情况。</p>
 <h3 id="1-1-Video-Codec-SDK"><a href="#1-1-Video-Codec-SDK" class="headerlink" title="1.1 Video Codec SDK"></a>1.1 Video Codec SDK</h3><p>​    <strong>Video Codec SDK</strong> 是NVIDIA官方推出的开发工具包，使用该工具包可以直接调用NVIDIA支持的编解码器，目前最新版本是8.2.</p>
-<p><img src="video-codec-sdk.png" alt="图1.NVIDIA CODEC"></p>
+<p><img src="/2019/01/24/2019-周报1/video-codec-sdk.png" alt="图1.NVIDIA CODEC"></p>
 <p>其它所有支持NVIDIA硬编码的框架都是在这基础上进行的二次开发，如<strong>ffmpeg</strong>。直接使用该开发包进行编解码效率最高，但是参数众多，学习成本高。</p>
 <h3 id="1-2-使用opencv编解码"><a href="#1-2-使用opencv编解码" class="headerlink" title="1.2 使用opencv编解码"></a>1.2 使用opencv编解码</h3><p>​    opencv编程简单，有类似matlab一般便利的函数接口使用起来非常方便，且内置视频编解码模块cudacodec。</p>
-<p><img src="opencv_cudacodec.png" alt="图2.OpenCV CUDA accelerated"></p>
+<p><img src="/2019/01/24/2019-周报1/opencv_cudacodec.png" alt="图2.OpenCV CUDA accelerated"></p>
 <p>但是进一步调查发现opencv对视频编解码的支持比较老旧，模块中包含的视频编解码器十分有限且不具备hevc-nvenc与hevc-cuvid，具体包含的编解器如下图。</p>
-<p><img src="codec-opencv.png" alt="图3.OpenCV CODEC"></p>
+<p><img src="/2019/01/24/2019-周报1/codec-opencv.png" alt="图3.OpenCV CODEC"></p>
 <p>若要使其支持，需要自己手动添加ffmpeg最新库使其支持，既麻烦也没有必要，所以编解码放弃使用opencv实现。</p>
 <h3 id="1-3-FFmpeg-libav"><a href="#1-3-FFmpeg-libav" class="headerlink" title="1.3 FFmpeg / libav"></a>1.3 FFmpeg / libav</h3><p>​    <strong>ffmpeg/libav</strong>库为NVIDIA官方推荐的视频编解码框架，支持所有NVIDIA最新的编解码器。在安装NVIDIA最新的视频编解码开发包<strong>Video Codec SDK 8.2</strong>之后便可以使用ffmpeg/libav调用NVIDIA的编码器/解码器。</p>
 <h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p>​    从上面的介绍可以看出，以上三个框架从底层到高层的顺序为：Video Codec SDK–&gt;FFmpeg / libav–&gt;OpenCV。其中OpenCV的封装最高级，使用起来最为方便，但是其最新版本不支持英伟达的HEVC编解码器，FFmpeg很好地支持英伟达最新编解码器，其使用起来相比Video Codec SDK方便，所以目前确定开放方案如下</p>
@@ -280,7 +280,7 @@
 <hr>
 <h1 id="2-人脸识别算法调研"><a href="#2-人脸识别算法调研" class="headerlink" title="2 人脸识别算法调研"></a>2 人脸识别算法调研</h1><p>​    最早的关于人脸识别的研究出现在20世纪50年代的心理学领域[Bruner and Tagiuri 1954]，到20世纪60年代才逐渐有了一些工程上的文献出现[Bledsoe 1964]. 但真正关于机器自动识别的研究开始于20世纪70年代[Kelly 1970] ,Kanade [1973]。20世纪50年代以来，心理学家和神经科学家的研究对此领域影响重大，并出现了一系列重要的成果与算法。</p>
 <h3 id="2-1-人脸识别的主要步骤与影响因素"><a href="#2-1-人脸识别的主要步骤与影响因素" class="headerlink" title="2.1 人脸识别的主要步骤与影响因素"></a>2.1 人脸识别的主要步骤与影响因素</h3><p>​    相比与指纹识别，虹膜，视网膜识别之类的技术。人脸识别不需要被识别者的主动配合，因此具有很大的商业价值，所以一直受到学者的重视。在这个领域中很难说哪一种算法比另一种更好，这取决于应用场景，背景简单或复杂，图像识别或者是视频识别，图像质量的好坏，数据集的多少都对算法有着很大地影响。通常来说，一个人脸识别系统包括人脸检测，特征提取，人脸识别/匹配三个部分，如下图所示。</p>
-<p><img src="week1-face-steps.png" alt="图4.face recognition steps"></p>
+<p><img src="/2019/01/24/2019-周报1/week1-face-steps.png" alt="图4.face recognition steps"></p>
 <p>影响人脸识别算法性能的问题有很多，其中最重要的两个问题为：</p>
 <ol>
 <li>光照问题</li>
@@ -291,10 +291,10 @@
 <h4 id="2-2-2-主成分分析法-Principle-component-analysis-PCA"><a href="#2-2-2-主成分分析法-Principle-component-analysis-PCA" class="headerlink" title="2.2.2 主成分分析法(Principle-component-analysis,PCA)"></a>2.2.2 主成分分析法(Principle-component-analysis,PCA)</h4><p>​    主成分分析法是应用极为广泛的经典传统算法，包括Eigenface,fisherface，LBP(Local Binary Patterns)等经典方法。</p>
 <h5 id="2-2-2-1-EigenFace"><a href="#2-2-2-1-EigenFace" class="headerlink" title="2.2.2.1 EigenFace"></a>2.2.2.1 EigenFace</h5><p>​    EigenFace又称特征脸或者本征脸方法，是90年代初期由Turk和Pentland提出的目前最流行的算法之一，具有简单有效的特。</p>
 <p>​    特征子脸技术的基本思想是：从统计的观点，寻找人脸图像分布的基本元素，即人脸图像样本集协方差矩阵的特征向量，以此近似地表征人脸图像。这些特征向量称为特征脸(Eigenface)。</p>
-<p><img src="week1-eigen.png" alt="图5.EigenFace"></p>
+<p><img src="/2019/01/24/2019-周报1/week1-eigen.png" alt="图5.EigenFace"></p>
 <h5 id="2-2-2-2-FisherFace"><a href="#2-2-2-2-FisherFace" class="headerlink" title="2.2.2.2 FisherFace"></a>2.2.2.2 FisherFace</h5><p>​    FisherFace是另一种特征子空间的构建方法，和EigenFace的思想一致，在PCA的基础上加入了LDA(Linear Discriminant Analysis)构建的子空间</p>
 <h4 id="2-2-3-神经网络"><a href="#2-2-3-神经网络" class="headerlink" title="2.2.3 神经网络"></a>2.2.3 神经网络</h4><p>​    在神经网络方法之前，都是采取人工提取特征+分类器分类的方式。如上面提到的EigenFace，FisherFace，LBP等特征提取，除此之外还HOG,SIFT,Gabor等特征提取方法。而神经网络不需要认为提取特征，通过在大量数据中模型自动学习特征，也是目前人脸识别中正确率最高的方法，但缺点是所需数据量大，在缺少数据的场合通常使用人工提取特征的方法。</p>
-<h4 id="2-2-4-其它算法"><a href="#2-2-4-其它算法" class="headerlink" title="2.2.4 其它算法"></a>2.2.4 其它算法</h4><p><img src="week1-category.png" alt="图6.categories"></p>
+<h4 id="2-2-4-其它算法"><a href="#2-2-4-其它算法" class="headerlink" title="2.2.4 其它算法"></a>2.2.4 其它算法</h4><p><img src="/2019/01/24/2019-周报1/week1-category.png" alt="图6.categories"></p>
 <h3 id="2-3-参考资料"><a href="#2-3-参考资料" class="headerlink" title="2.3 参考资料"></a>2.3 参考资料</h3><ol>
 <li>Zhao, Wenyi, et al. “Face recognition: A literature survey.” <em>ACM computing surveys (CSUR)</em> 35.4 (2003): 399-458.</li>
 <li>Pandya, Jigar M., Devang Rathod, and Jigna J. Jadav. “A survey of face recognition approach.” <em>International Journal of Engineering Research and Applications (IJERA)</em> 3.1 (2013): 632-635.</li>
@@ -310,7 +310,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjrhqtc7q0004z0u7irrbb9yo" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjrhr2i2q0001tsu7uupad1s4" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
