@@ -81,7 +81,7 @@
             <div id="search-form-wrap">
 
     <form class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="Buscar" />
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
         <button type="submit" class="search-form-submit"></button>
     </form>
     <div class="ins-search">
@@ -100,10 +100,10 @@
 (function (window) {
     var INSIGHT_CONFIG = {
         TRANSLATION: {
-            POSTS: 'Entradas',
+            POSTS: 'Posts',
             PAGES: 'Pages',
-            CATEGORIES: 'Categorias',
-            TAGS: 'Etiquetas',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
             UNTITLED: '(Untitled)',
         },
         ROOT_URL: '/',
@@ -134,7 +134,7 @@
                 <td>
                     
     <div class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="Buscar" />
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
     </div>
 
                 </td>
@@ -154,16 +154,16 @@
             <h2 id="name">lilei</h2>
             <h3 id="title">student &amp; manga lover</h3>
             <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>xi&#39;an, China</span>
-            <a id="follow" target="_blank" href="https://github.com/scholar/">SEGUIR</a>
+            <a id="follow" target="_blank" href="https://github.com/scholar/">FOLLOW</a>
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                3
-                <span>Entradas</span>
+                4
+                <span>posts</span>
             </div>
             <div class="article-info-block">
                 1
-                <span>Etiqueta</span>
+                <span>tag</span>
             </div>
         </div>
         
@@ -211,7 +211,7 @@
 
             
             <section id="main">
-    <article id="post-2019-周报1" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2019-周报2" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -219,7 +219,7 @@
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2019/01/24/2019-周报1/">2019-周报1</a>
+            <a class="article-title" href="/2019/01/31/2019-周报2/">2019-周报2</a>
         </h1>
     
 
@@ -228,8 +228,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/01/24/2019-周报1/">
-            <time datetime="2019-01-24T13:42:49.000Z" itemprop="datePublished">2019-01-24</time>
+        <a href="/2019/01/31/2019-周报2/">
+            <time datetime="2019-01-31T14:53:57.000Z" itemprop="datePublished">2019-01-31</time>
         </a>
     </div>
 
@@ -244,52 +244,51 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>本周对视频编解码的几种框架进行了比较，给出了初步的方案设计，人脸识别方面，查阅了相关论文，对二十世纪七十年代至今的各种人脸识别算法做了总结，具体情况如下。</p>
-<h1 id="1-视频编解码方案设计"><a href="#1-视频编解码方案设计" class="headerlink" title="1 视频编解码方案设计"></a>1 视频编解码方案设计</h1><p>​    视频编解码部分，现已确定编码使用<strong>hevc-nvenc</strong>编码器，解码使用<strong>hevc-cuvid</strong>解码器，拼接使用CUDA编程在GPU内实现。关键在于使用哪个框架使得编程实现最方便，以下是几种编解码方案的介绍及对比情况。</p>
-<h3 id="1-1-Video-Codec-SDK"><a href="#1-1-Video-Codec-SDK" class="headerlink" title="1.1 Video Codec SDK"></a>1.1 Video Codec SDK</h3><p>​    <strong>Video Codec SDK</strong> 是NVIDIA官方推出的开发工具包，使用该工具包可以直接调用NVIDIA支持的编解码器，目前最新版本是8.2.</p>
-<p><img src="/2019/01/24/2019-周报1/video-codec-sdk.png" alt="图1.NVIDIA CODEC"></p>
-<p>其它所有支持NVIDIA硬编码的框架都是在这基础上进行的二次开发，如<strong>ffmpeg</strong>。直接使用该开发包进行编解码效率最高，但是参数众多，学习成本高。</p>
-<h3 id="1-2-使用opencv编解码"><a href="#1-2-使用opencv编解码" class="headerlink" title="1.2 使用opencv编解码"></a>1.2 使用opencv编解码</h3><p>​    opencv编程简单，有类似matlab一般便利的函数接口使用起来非常方便，且内置视频编解码模块cudacodec。</p>
-<p><img src="/2019/01/24/2019-周报1/opencv_cudacodec.png" alt="图2.OpenCV CUDA accelerated"></p>
-<p>但是进一步调查发现opencv对视频编解码的支持比较老旧，模块中包含的视频编解码器十分有限且不具备hevc-nvenc与hevc-cuvid，具体包含的编解器如下图。</p>
-<p><img src="/2019/01/24/2019-周报1/codec-opencv.png" alt="图3.OpenCV CODEC"></p>
-<p>若要使其支持，需要自己手动添加ffmpeg最新库使其支持，既麻烦也没有必要，所以编解码放弃使用opencv实现。</p>
-<h3 id="1-3-FFmpeg-libav"><a href="#1-3-FFmpeg-libav" class="headerlink" title="1.3 FFmpeg / libav"></a>1.3 FFmpeg / libav</h3><p>​    <strong>ffmpeg/libav</strong>库为NVIDIA官方推荐的视频编解码框架，支持所有NVIDIA最新的编解码器。在安装NVIDIA最新的视频编解码开发包<strong>Video Codec SDK 8.2</strong>之后便可以使用ffmpeg/libav调用NVIDIA的编码器/解码器。</p>
-<h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p>​    从上面的介绍可以看出，以上三个框架从底层到高层的顺序为：Video Codec SDK–&gt;FFmpeg / libav–&gt;OpenCV。其中OpenCV的封装最高级，使用起来最为方便，但是其最新版本不支持英伟达的HEVC编解码器，FFmpeg很好地支持英伟达最新编解码器，其使用起来相比Video Codec SDK方便，所以目前确定开放方案如下</p>
-<ul>
-<li>编解码框架：ffmpeg</li>
-<li>拼接：CUDA</li>
-<li>开发环境：VisualStudio2015</li>
-</ul>
-<p>​    <strong>疑问：</strong> ffmpeg在windows上使用<strong>MinGW</strong>编译器编译，CUDA程序使用<strong>NVCC</strong>编译器编译，目前还不清楚将FFmpeg与CUDA结合使用的具体方法？？？</p>
-<h3 id="1-5-参考资料"><a href="#1-5-参考资料" class="headerlink" title="1.5 参考资料"></a>1.5 参考资料</h3><p><a href="https://developer.nvidia.com/nvidia-video-codec-sdk" target="_blank" rel="noopener">NVIDIA VIDEO CODEC SDK</a></p>
-<p><a href="https://developer.nvidia.com/ffmpeg" target="_blank" rel="noopener">NVIDIA-FFmpeg/libav</a></p>
-<p><a href="https://docs.opencv.org/4.0.0/index.html" target="_blank" rel="noopener">OpenCV 4.0 docs</a></p>
-<p><a href="https://docs.opencv.org/4.0.0/d0/d61/group__cudacodec.html" target="_blank" rel="noopener">OpenCV Video Encoding/Decoding</a></p>
-<p><a href="https://libav.org/about/" target="_blank" rel="noopener">FFmpeg/libav</a></p>
-<hr>
-<h1 id="2-人脸识别算法调研"><a href="#2-人脸识别算法调研" class="headerlink" title="2 人脸识别算法调研"></a>2 人脸识别算法调研</h1><p>​    最早的关于人脸识别的研究出现在20世纪50年代的心理学领域[Bruner and Tagiuri 1954]，到20世纪60年代才逐渐有了一些工程上的文献出现[Bledsoe 1964]. 但真正关于机器自动识别的研究开始于20世纪70年代[Kelly 1970] ,Kanade [1973]。20世纪50年代以来，心理学家和神经科学家的研究对此领域影响重大，并出现了一系列重要的成果与算法。</p>
-<h3 id="2-1-人脸识别的主要步骤与影响因素"><a href="#2-1-人脸识别的主要步骤与影响因素" class="headerlink" title="2.1 人脸识别的主要步骤与影响因素"></a>2.1 人脸识别的主要步骤与影响因素</h3><p>​    相比与指纹识别，虹膜，视网膜识别之类的技术。人脸识别不需要被识别者的主动配合，因此具有很大的商业价值，所以一直受到学者的重视。在这个领域中很难说哪一种算法比另一种更好，这取决于应用场景，背景简单或复杂，图像识别或者是视频识别，图像质量的好坏，数据集的多少都对算法有着很大地影响。通常来说，一个人脸识别系统包括人脸检测，特征提取，人脸识别/匹配三个部分，如下图所示。</p>
-<p><img src="/2019/01/24/2019-周报1/week1-face-steps.png" alt="图4.face recognition steps"></p>
-<p>影响人脸识别算法性能的问题有很多，其中最重要的两个问题为：</p>
+            <p>本周主要学习了cuda编程，简单地了解了几种基于深度学习的人脸识别算法(DeepFace, DeepID, FaceNet, VGGFace)</p>
+<h1 id="1-CUDA编程"><a href="#1-CUDA编程" class="headerlink" title="1 CUDA编程"></a>1 CUDA编程</h1><p>CPU+GPU的异构编程架构是高性能计算的主流，以高吞吐量与高效率完成复杂任务。其代码分为两部分，由主机端(CPU)运行代码与设备端(GPU)运行代码(核函数)组成。</p>
+<p>CUDA编程中，<strong>内存管理</strong>，<strong>线程管理</strong>，<strong>设备管理</strong>是非常重要的概念，也是构成程序逻辑与影响程序效率的重要因素。除此之外CUDA编程需要了解GPU的架构，资源。CUDA程序流程大致分为以下几个部分：</p>
 <ol>
-<li>光照问题</li>
-<li>姿势问题</li>
+<li>主机端(CPU)内存分配，设备端(GPU)内存分配</li>
+<li>把数据从CPU内存拷贝到GPU内存</li>
+<li>调用核函数对存储在GPU内存的数据进行操作</li>
+<li>将数据从GPU内存传回到CPU内存</li>
 </ol>
-<h3 id="2-2-人脸识别主要算法介绍"><a href="#2-2-人脸识别主要算法介绍" class="headerlink" title="2.2 人脸识别主要算法介绍"></a>2.2 人脸识别主要算法介绍</h3><p>​    下面主要介绍近四十年来人脸识别领域的各种经典算法，关于人脸识别算法的分类方法很多，下面按照年代顺序介绍最为主要的一些算法</p>
-<h4 id="2-2-1-基于几何特征的人脸识别算法"><a href="#2-2-1-基于几何特征的人脸识别算法" class="headerlink" title="2.2.1 基于几何特征的人脸识别算法"></a>2.2.1 基于几何特征的人脸识别算法</h4><p>​    作为最早的人脸识别方法，人们最先想到的便是对人脸的几何特征进行提取识别，使用眼睛、鼻子、嘴巴、下巴等重要特征的几何关系来描述人脸的轮廓。但实际效果并不乐观，识别能力与速度以及算法的鲁棒性都不够高，通常需要与其它方法结合使用。</p>
-<h4 id="2-2-2-主成分分析法-Principle-component-analysis-PCA"><a href="#2-2-2-主成分分析法-Principle-component-analysis-PCA" class="headerlink" title="2.2.2 主成分分析法(Principle-component-analysis,PCA)"></a>2.2.2 主成分分析法(Principle-component-analysis,PCA)</h4><p>​    主成分分析法是应用极为广泛的经典传统算法，包括Eigenface,fisherface，LBP(Local Binary Patterns)等经典方法。</p>
-<h5 id="2-2-2-1-EigenFace"><a href="#2-2-2-1-EigenFace" class="headerlink" title="2.2.2.1 EigenFace"></a>2.2.2.1 EigenFace</h5><p>​    EigenFace又称特征脸或者本征脸方法，是90年代初期由Turk和Pentland提出的目前最流行的算法之一，具有简单有效的特。</p>
-<p>​    特征子脸技术的基本思想是：从统计的观点，寻找人脸图像分布的基本元素，即人脸图像样本集协方差矩阵的特征向量，以此近似地表征人脸图像。这些特征向量称为特征脸(Eigenface)。</p>
-<p><img src="/2019/01/24/2019-周报1/week1-eigen.png" alt="图5.EigenFace"></p>
-<h5 id="2-2-2-2-FisherFace"><a href="#2-2-2-2-FisherFace" class="headerlink" title="2.2.2.2 FisherFace"></a>2.2.2.2 FisherFace</h5><p>​    FisherFace是另一种特征子空间的构建方法，和EigenFace的思想一致，在PCA的基础上加入了LDA(Linear Discriminant Analysis)构建的子空间</p>
-<h4 id="2-2-3-神经网络"><a href="#2-2-3-神经网络" class="headerlink" title="2.2.3 神经网络"></a>2.2.3 神经网络</h4><p>​    在神经网络方法之前，都是采取人工提取特征+分类器分类的方式。如上面提到的EigenFace，FisherFace，LBP等特征提取，除此之外还HOG,SIFT,Gabor等特征提取方法。而神经网络不需要认为提取特征，通过在大量数据中模型自动学习特征，也是目前人脸识别中正确率最高的方法，但缺点是所需数据量大，在缺少数据的场合通常使用人工提取特征的方法。</p>
-<h4 id="2-2-4-其它算法"><a href="#2-2-4-其它算法" class="headerlink" title="2.2.4 其它算法"></a>2.2.4 其它算法</h4><p><img src="/2019/01/24/2019-周报1/week1-category.png" alt="图6.categories"></p>
-<h3 id="2-3-参考资料"><a href="#2-3-参考资料" class="headerlink" title="2.3 参考资料"></a>2.3 参考资料</h3><ol>
-<li>Zhao, Wenyi, et al. “Face recognition: A literature survey.” <em>ACM computing surveys (CSUR)</em> 35.4 (2003): 399-458.</li>
-<li>Pandya, Jigar M., Devang Rathod, and Jigna J. Jadav. “A survey of face recognition approach.” <em>International Journal of Engineering Research and Applications (IJERA)</em> 3.1 (2013): 632-635.</li>
-<li>Vijayakumari, V. “Face recognition techniques: A survey.” <em>World journal of computer application and technology</em> 1.2 (2013): 41-50.</li>
-</ol>
+<h3 id="1-1-内存管理"><a href="#1-1-内存管理" class="headerlink" title="1.1 内存管理"></a>1.1 内存管理</h3><p>CUDA编程模型是由主机和设备组成，各自拥有独立的内存。为了使操作者拥有充分的控制权并使系统达到最佳性能，CUDA运行时负责分配与释放内存，并且在主机与设备内存之间传输数据。内存管理函数如下：</p>
+<p><img src="./week2-memory.png" alt="图一.内存管理函数"></p>
+<p>设备端的内存只有核函数能够读取，使用<code>udaMemcpy()</code>函数在主机与设备之间进行数据转移，如上面的4个步骤提到的，通常都是将主机端的数据拷贝到设备端，调用核函数对设备端的数据进行计算，再将计算之后的结果拷贝回主机端进行存储。</p>
+<h3 id="1-2-线程管理"><a href="#1-2-线程管理" class="headerlink" title="1.2 线程管理"></a>1.2 线程管理</h3><p>线程管理是CUDA编程很重要的一个概念，从逻辑层的角度来看，GPU中各个线程并行进行（硬件层不一定都是并行）。CUDA的特点之一就是通过编程模型揭示了一个两层线程层次结构（grid+block），充分熟悉与理解线程层次结构对DUDA编程十分重要。</p>
+<p>每启动一个核函数就会在设备中产生大量的线程，并且每个线程都执行由核函数指定的语句，产生的大量线程便是两层的线程结构进行管理，由线程块(block)与线程网格(grid)构成</p>
+<p><img src="./week2-thread_level.png" alt="图二.线程结构"></p>
+<p>每启动一个核函数，就同时启动了一个网格(grid)，网格最多可以为三维，维度值的最大值由硬件决定，我们服务器上的 GeForce GTX 1080 Ti 支持的最大网格维数为<code>1D=(131072), 2D=(131072,65536), 3D=(16384,16384,16384)</code> ，网格由块组成，这便是线程结构的第一层。块由线程组成，这便是第二层。他们的层次结构为: 网格(grid)–&gt;块(block)–&gt;线程(thread)</p>
+<h3 id="1-3-设备管理"><a href="#1-3-设备管理" class="headerlink" title="1.3 设备管理"></a>1.3 设备管理</h3><p>前面说到了在逻辑层来说，各个线程都是并行运行的，但是在硬件层并不一定，并没有那么多的硬件资源供所有线程并行运行。设备管理需要清楚当前硬件的资源情况，对于程序的优化十分重要，设备管理需要对GPU的架构有一定了解，NVIDIA目前推出的最新架构为Turing，实验室服务器使用的 GeForce GTX 1080 Ti为Pascal架构，其资源如下图所示：</p>
+<p><img src="./week2-device.png" alt="图3.设备资源"></p>
+<p>参数中</p>
+<ul>
+<li>Warp size:                                     32</li>
+<li>Maximum number of threads per multiprocessor:  2048</li>
+<li>Maximum number of threads per block:           1024</li>
+<li>Maximum sizes of each dimension of a block:    1024 x 1024 x 64</li>
+<li>Maximum sizes of each dimension of a grid:     2147483647 x 65535 x 65535</li>
+</ul>
+<p>几个参数，对于编程时资源的分配十分重要</p>
+<h3 id="1-4-参考资料"><a href="#1-4-参考资料" class="headerlink" title="1.4 参考资料"></a>1.4 参考资料</h3><ul>
+<li>CUDA C编程权威指南(John Cheng)</li>
+</ul>
+<h1 id="2-基于深度学习的人脸识别算法"><a href="#2-基于深度学习的人脸识别算法" class="headerlink" title="2 基于深度学习的人脸识别算法"></a>2 基于深度学习的人脸识别算法</h1><p>深度学习的人脸识别算法准确度大大地高于传统算法，准确度早已超过了人工识别准确率(DeepFace: 92.5%, DeepID:  99.15%, FaceNet-NN3: 99.65% , LFW数据集测试结果)，所以现在深度学习在人脸识别方面的研究除了提高准确率之外还致力于裁剪网络结构，减小参数(VGGFace)</p>
+<h3 id="2-1-DeepFace"><a href="#2-1-DeepFace" class="headerlink" title="2.1 DeepFace"></a>2.1 DeepFace</h3><p>人脸识别可分为 detect-&gt; align-&gt; represent-&gt; classify 几个部分,DeepFace在align部分使用了3D对齐技术，将检测到的人脸进行3D-aligned处理之后再放入网络中进行识别。网络结构如下图所示</p>
+<p><img src="./week2-DeepFaceArchitecture.png" alt="图4.DeepFace网络结构"></p>
+<p>从图中可以看出，检测到的是侧脸，经过3D-aligned处理之后面部调整为正面，讲调整后的图像输入网络。网络C1, C3表示卷积层，M2为max pooling层，L4, L5, L6为局部卷积层，F7, F8为全连接层。</p>
+<h3 id="2-2-DeepID"><a href="#2-2-DeepID" class="headerlink" title="2.2 DeepID"></a>2.2 DeepID</h3><p>DeepID是在GoogleNet和VGGNet上的基础上进行改进，使之适应于人脸识别，网络有一代和二代两种，两种网络的区别主要在于损失函数的定义。常用的为DeepID2的损失函数，除了采用softmax训练构建分类器时产生的交叉熵函数之外，还添加了关于两张图片是不是一个人的损失函数，两个损失函数按权重组合，最终生成了对应的总损失函数用来进行训练，网络结构如下：</p>
+<p><img src="./week2-DeepIDArchitecture.png" alt="图5.DeepID网络机构"></p>
+<p>相比DeepFace，DeepID3的网络结构更深，且没有使用3D对齐技术，直接输入检测到的人脸图像进行识别。</p>
+<h3 id="2-3-FaceNet"><a href="#2-3-FaceNet" class="headerlink" title="2.3 FaceNet"></a>2.3 FaceNet</h3><p>FaceNetFaceNet是谷歌提出的网络结构, 网络在使用的过程中通过三元对来构造损失函数，直接根据学习到的特征向量，计算在一类的图片距离和不在一类的图片距离，训练的结果是一类之间的距离尽量小，不一类之间的距离尽量大。</p>
+<h3 id="2-4-VGGFace"><a href="#2-4-VGGFace" class="headerlink" title="2.4 VGGFace"></a>2.4 VGGFace</h3><p>VGGFace的网络在LFW数据集上的准确率为98.95%，虽然不及FaceID和FaceNet，但是网络结构更加简单，有更强的鲁棒性</p>
+<h3 id="2-5-参考资料"><a href="#2-5-参考资料" class="headerlink" title="2.5 参考资料"></a>2.5 参考资料</h3><ul>
+<li><a href="https://www.cs.toronto.edu/~ranzato/publications/taigman_cvpr14.pdf" target="_blank" rel="noopener">DeepFace: Closing the Gap to Human-Level Performance in Face Verification</a> [Yaniv Taigman et al., 2014]</li>
+<li><a href="https://arxiv.org/abs/1502.00873" target="_blank" rel="noopener">DeepID3: Face Recognition with Very Deep Neural Networks</a> [Yi Sun et al., 2015]</li>
+<li><a href="http://www.cv-foundation.org/openaccess/content_cvpr_2015/html/Schroff_FaceNet_A_Unified_2015_CVPR_paper.html" target="_blank" rel="noopener">FaceNet: A Unified Embedding for Face Recognition and Clustering</a> [Florian Schroff et al., 2015]</li>
+<li><a href="https://www.robots.ox.ac.uk/~vgg/publications/2015/Parkhi15/parkhi15.pdf" target="_blank" rel="noopener">Deep Face Recognition</a> [Omkar M. Parkhi et al., 2015]</li>
+</ul>
 
         
         </div>
@@ -300,7 +299,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjraq07b20001xku72gcytsmj" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjrhqtc7l0001z0u7vh9m9ca9" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -368,7 +367,174 @@
 
             
     
-        <a href="http://yoursite.com/2019/01/24/2019-周报1/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/24/2019-周报1/">Comentarios</a>
+        <a href="http://yoursite.com/2019/01/31/2019-周报2/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/31/2019-周报2/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报1" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/01/24/2019-周报1/">2019-周报1</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/01/24/2019-周报1/">
+            <time datetime="2019-01-24T13:42:49.000Z" itemprop="datePublished">2019-01-24</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周对视频编解码的几种框架进行了比较，给出了初步的方案设计，人脸识别方面，查阅了相关论文，对二十世纪七十年代至今的各种人脸识别算法做了总结，具体情况如下。</p>
+<h1 id="1-视频编解码方案设计"><a href="#1-视频编解码方案设计" class="headerlink" title="1 视频编解码方案设计"></a>1 视频编解码方案设计</h1><p>​    视频编解码部分，现已确定编码使用<strong>hevc-nvenc</strong>编码器，解码使用<strong>hevc-cuvid</strong>解码器，拼接使用CUDA编程在GPU内实现。关键在于使用哪个框架使得编程实现最方便，以下是几种编解码方案的介绍及对比情况。</p>
+<h3 id="1-1-Video-Codec-SDK"><a href="#1-1-Video-Codec-SDK" class="headerlink" title="1.1 Video Codec SDK"></a>1.1 Video Codec SDK</h3><p>​    <strong>Video Codec SDK</strong> 是NVIDIA官方推出的开发工具包，使用该工具包可以直接调用NVIDIA支持的编解码器，目前最新版本是8.2.</p>
+<p><img src="video-codec-sdk.png" alt="图1.NVIDIA CODEC"></p>
+<p>其它所有支持NVIDIA硬编码的框架都是在这基础上进行的二次开发，如<strong>ffmpeg</strong>。直接使用该开发包进行编解码效率最高，但是参数众多，学习成本高。</p>
+<h3 id="1-2-使用opencv编解码"><a href="#1-2-使用opencv编解码" class="headerlink" title="1.2 使用opencv编解码"></a>1.2 使用opencv编解码</h3><p>​    opencv编程简单，有类似matlab一般便利的函数接口使用起来非常方便，且内置视频编解码模块cudacodec。</p>
+<p><img src="opencv_cudacodec.png" alt="图2.OpenCV CUDA accelerated"></p>
+<p>但是进一步调查发现opencv对视频编解码的支持比较老旧，模块中包含的视频编解码器十分有限且不具备hevc-nvenc与hevc-cuvid，具体包含的编解器如下图。</p>
+<p><img src="codec-opencv.png" alt="图3.OpenCV CODEC"></p>
+<p>若要使其支持，需要自己手动添加ffmpeg最新库使其支持，既麻烦也没有必要，所以编解码放弃使用opencv实现。</p>
+<h3 id="1-3-FFmpeg-libav"><a href="#1-3-FFmpeg-libav" class="headerlink" title="1.3 FFmpeg / libav"></a>1.3 FFmpeg / libav</h3><p>​    <strong>ffmpeg/libav</strong>库为NVIDIA官方推荐的视频编解码框架，支持所有NVIDIA最新的编解码器。在安装NVIDIA最新的视频编解码开发包<strong>Video Codec SDK 8.2</strong>之后便可以使用ffmpeg/libav调用NVIDIA的编码器/解码器。</p>
+<h3 id="1-4-总结"><a href="#1-4-总结" class="headerlink" title="1.4 总结"></a>1.4 总结</h3><p>​    从上面的介绍可以看出，以上三个框架从底层到高层的顺序为：Video Codec SDK–&gt;FFmpeg / libav–&gt;OpenCV。其中OpenCV的封装最高级，使用起来最为方便，但是其最新版本不支持英伟达的HEVC编解码器，FFmpeg很好地支持英伟达最新编解码器，其使用起来相比Video Codec SDK方便，所以目前确定开放方案如下</p>
+<ul>
+<li>编解码框架：ffmpeg</li>
+<li>拼接：CUDA</li>
+<li>开发环境：VisualStudio2015</li>
+</ul>
+<p>​    <strong>疑问：</strong> ffmpeg在windows上使用<strong>MinGW</strong>编译器编译，CUDA程序使用<strong>NVCC</strong>编译器编译，目前还不清楚将FFmpeg与CUDA结合使用的具体方法？？？</p>
+<h3 id="1-5-参考资料"><a href="#1-5-参考资料" class="headerlink" title="1.5 参考资料"></a>1.5 参考资料</h3><p><a href="https://developer.nvidia.com/nvidia-video-codec-sdk" target="_blank" rel="noopener">NVIDIA VIDEO CODEC SDK</a></p>
+<p><a href="https://developer.nvidia.com/ffmpeg" target="_blank" rel="noopener">NVIDIA-FFmpeg/libav</a></p>
+<p><a href="https://docs.opencv.org/4.0.0/index.html" target="_blank" rel="noopener">OpenCV 4.0 docs</a></p>
+<p><a href="https://docs.opencv.org/4.0.0/d0/d61/group__cudacodec.html" target="_blank" rel="noopener">OpenCV Video Encoding/Decoding</a></p>
+<p><a href="https://libav.org/about/" target="_blank" rel="noopener">FFmpeg/libav</a></p>
+<hr>
+<h1 id="2-人脸识别算法调研"><a href="#2-人脸识别算法调研" class="headerlink" title="2 人脸识别算法调研"></a>2 人脸识别算法调研</h1><p>​    最早的关于人脸识别的研究出现在20世纪50年代的心理学领域[Bruner and Tagiuri 1954]，到20世纪60年代才逐渐有了一些工程上的文献出现[Bledsoe 1964]. 但真正关于机器自动识别的研究开始于20世纪70年代[Kelly 1970] ,Kanade [1973]。20世纪50年代以来，心理学家和神经科学家的研究对此领域影响重大，并出现了一系列重要的成果与算法。</p>
+<h3 id="2-1-人脸识别的主要步骤与影响因素"><a href="#2-1-人脸识别的主要步骤与影响因素" class="headerlink" title="2.1 人脸识别的主要步骤与影响因素"></a>2.1 人脸识别的主要步骤与影响因素</h3><p>​    相比与指纹识别，虹膜，视网膜识别之类的技术。人脸识别不需要被识别者的主动配合，因此具有很大的商业价值，所以一直受到学者的重视。在这个领域中很难说哪一种算法比另一种更好，这取决于应用场景，背景简单或复杂，图像识别或者是视频识别，图像质量的好坏，数据集的多少都对算法有着很大地影响。通常来说，一个人脸识别系统包括人脸检测，特征提取，人脸识别/匹配三个部分，如下图所示。</p>
+<p><img src="week1-face-steps.png" alt="图4.face recognition steps"></p>
+<p>影响人脸识别算法性能的问题有很多，其中最重要的两个问题为：</p>
+<ol>
+<li>光照问题</li>
+<li>姿势问题</li>
+</ol>
+<h3 id="2-2-人脸识别主要算法介绍"><a href="#2-2-人脸识别主要算法介绍" class="headerlink" title="2.2 人脸识别主要算法介绍"></a>2.2 人脸识别主要算法介绍</h3><p>​    下面主要介绍近四十年来人脸识别领域的各种经典算法，关于人脸识别算法的分类方法很多，下面按照年代顺序介绍最为主要的一些算法</p>
+<h4 id="2-2-1-基于几何特征的人脸识别算法"><a href="#2-2-1-基于几何特征的人脸识别算法" class="headerlink" title="2.2.1 基于几何特征的人脸识别算法"></a>2.2.1 基于几何特征的人脸识别算法</h4><p>​    作为最早的人脸识别方法，人们最先想到的便是对人脸的几何特征进行提取识别，使用眼睛、鼻子、嘴巴、下巴等重要特征的几何关系来描述人脸的轮廓。但实际效果并不乐观，识别能力与速度以及算法的鲁棒性都不够高，通常需要与其它方法结合使用。</p>
+<h4 id="2-2-2-主成分分析法-Principle-component-analysis-PCA"><a href="#2-2-2-主成分分析法-Principle-component-analysis-PCA" class="headerlink" title="2.2.2 主成分分析法(Principle-component-analysis,PCA)"></a>2.2.2 主成分分析法(Principle-component-analysis,PCA)</h4><p>​    主成分分析法是应用极为广泛的经典传统算法，包括Eigenface,fisherface，LBP(Local Binary Patterns)等经典方法。</p>
+<h5 id="2-2-2-1-EigenFace"><a href="#2-2-2-1-EigenFace" class="headerlink" title="2.2.2.1 EigenFace"></a>2.2.2.1 EigenFace</h5><p>​    EigenFace又称特征脸或者本征脸方法，是90年代初期由Turk和Pentland提出的目前最流行的算法之一，具有简单有效的特。</p>
+<p>​    特征子脸技术的基本思想是：从统计的观点，寻找人脸图像分布的基本元素，即人脸图像样本集协方差矩阵的特征向量，以此近似地表征人脸图像。这些特征向量称为特征脸(Eigenface)。</p>
+<p><img src="week1-eigen.png" alt="图5.EigenFace"></p>
+<h5 id="2-2-2-2-FisherFace"><a href="#2-2-2-2-FisherFace" class="headerlink" title="2.2.2.2 FisherFace"></a>2.2.2.2 FisherFace</h5><p>​    FisherFace是另一种特征子空间的构建方法，和EigenFace的思想一致，在PCA的基础上加入了LDA(Linear Discriminant Analysis)构建的子空间</p>
+<h4 id="2-2-3-神经网络"><a href="#2-2-3-神经网络" class="headerlink" title="2.2.3 神经网络"></a>2.2.3 神经网络</h4><p>​    在神经网络方法之前，都是采取人工提取特征+分类器分类的方式。如上面提到的EigenFace，FisherFace，LBP等特征提取，除此之外还HOG,SIFT,Gabor等特征提取方法。而神经网络不需要认为提取特征，通过在大量数据中模型自动学习特征，也是目前人脸识别中正确率最高的方法，但缺点是所需数据量大，在缺少数据的场合通常使用人工提取特征的方法。</p>
+<h4 id="2-2-4-其它算法"><a href="#2-2-4-其它算法" class="headerlink" title="2.2.4 其它算法"></a>2.2.4 其它算法</h4><p><img src="week1-category.png" alt="图6.categories"></p>
+<h3 id="2-3-参考资料"><a href="#2-3-参考资料" class="headerlink" title="2.3 参考资料"></a>2.3 参考资料</h3><ol>
+<li>Zhao, Wenyi, et al. “Face recognition: A literature survey.” <em>ACM computing surveys (CSUR)</em> 35.4 (2003): 399-458.</li>
+<li>Pandya, Jigar M., Devang Rathod, and Jigna J. Jadav. “A survey of face recognition approach.” <em>International Journal of Engineering Research and Applications (IJERA)</em> 3.1 (2013): 632-635.</li>
+<li>Vijayakumari, V. “Face recognition techniques: A survey.” <em>World journal of computer application and technology</em> 1.2 (2013): 41-50.</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjrhqtc7q0004z0u7irrbb9yo" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/01/24/2019-周报1/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/24/2019-周报1/">Comments</a>
     
 
         </footer>
@@ -430,7 +596,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjraq07b60003xku7pv3nvin0" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjrhqtc7o0003z0u7wr5enk5z" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -498,7 +664,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/01/21/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/21/hello-world/">Comentarios</a>
+        <a href="http://yoursite.com/2019/01/21/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/21/hello-world/">Comments</a>
     
 
         </footer>
@@ -581,7 +747,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjraq07at0000xku7tb8ib92r" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjrhqtc7h0000z0u7sjsyiy4f" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -649,7 +815,7 @@
 
             
     
-        <a href="http://yoursite.com/2018/09/15/学习报告-第二周/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2018/09/15/学习报告-第二周/">Comentarios</a>
+        <a href="http://yoursite.com/2018/09/15/学习报告-第二周/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2018/09/15/学习报告-第二周/">Comments</a>
     
 
         </footer>
@@ -665,9 +831,28 @@
    
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Recientes</h3>
+        <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/01/31/2019-周报2/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/01/31/2019-周报2/" class="title">2019-周报2</a></p>
+                            <p class="item-date"><time datetime="2019-01-31T14:53:57.000Z" itemprop="datePublished">2019-01-31</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -735,16 +920,16 @@
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Archivos</h3>
+        <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Etiquetas</h3>
+        <h3 class="widget-title">tags</h3>
         <div class="widget">
             <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/report/">report</a><span class="tag-list-count">1</span></li></ul>
         </div>
@@ -753,7 +938,7 @@
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Nube de etiquetas</h3>
+        <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
             <a href="/tags/report/" style="font-size: 10px;">report</a>
         </div>
@@ -762,7 +947,7 @@
     
         
     <div class="widget-wrap widget-list">
-        <h3 class="widget-title">Links</h3>
+        <h3 class="widget-title">links</h3>
         <div class="widget">
             <ul>
                 
