@@ -81,7 +81,7 @@
             <div id="search-form-wrap">
 
     <form class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="Buscar" />
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
         <button type="submit" class="search-form-submit"></button>
     </form>
     <div class="ins-search">
@@ -100,10 +100,10 @@
 (function (window) {
     var INSIGHT_CONFIG = {
         TRANSLATION: {
-            POSTS: 'Entradas',
+            POSTS: 'Posts',
             PAGES: 'Pages',
-            CATEGORIES: 'Categorias',
-            TAGS: 'Etiquetas',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
             UNTITLED: '(Untitled)',
         },
         ROOT_URL: '/',
@@ -134,7 +134,7 @@
                 <td>
                     
     <div class="search-form">
-        <input type="text" class="ins-search-input search-form-input" placeholder="Buscar" />
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
     </div>
 
                 </td>
@@ -154,16 +154,16 @@
             <h2 id="name">lilei</h2>
             <h3 id="title">student &amp; manga lover</h3>
             <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>xi&#39;an, China</span>
-            <a id="follow" target="_blank" href="https://github.com/scholar/">SEGUIR</a>
+            <a id="follow" target="_blank" href="https://github.com/scholar/">FOLLOW</a>
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                5
-                <span>Entradas</span>
+                6
+                <span>posts</span>
             </div>
             <div class="article-info-block">
-                1
-                <span>Etiqueta</span>
+                2
+                <span>tags</span>
             </div>
         </div>
         
@@ -211,6 +211,170 @@
 
             
             <section id="main">
+    <article id="post-2019-周报4" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/03/01/2019-周报4/">2019-周报4</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/03/01/2019-周报4/">
+            <time datetime="2019-03-01T05:58:28.000Z" itemprop="datePublished">2019-03-01</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/opencv-h264-h265/">opencv, h264, h265</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周编译了支持GPU的opencv源码（编译时间挺长的），并分别测试了使用H264，H265编码的视频读写情况。除此之外翻译了一篇pytorch官方的教程。</p>
+<h1 id="1-OpenCV读写H264-H265编码视频"><a href="#1-OpenCV读写H264-H265编码视频" class="headerlink" title="1 OpenCV读写H264,H265编码视频"></a>1 OpenCV读写H264,H265编码视频</h1><p>测试了opencv读，写，拼接 H264，H265视频，下面是详细过程与结果。</p>
+<h3 id="1-1-读取H264，H265编码视频"><a href="#1-1-读取H264，H265编码视频" class="headerlink" title="1.1 读取H264，H265编码视频"></a>1.1 读取H264，H265编码视频</h3><p>分别使用opencv中的<code>cv::VideoCapture(source)</code> 读取 H264，H265编码后的视频，读取H264的视频一切正常，读取H265的视频整体正常，但提示丢失帧：</p>
+<p><img src="/2019/03/01/2019-周报4/./week4-h265-read.png" alt="图1.h265-read"></p>
+<p>使用100帧H265编码视频测试发现读取正常，并没有少帧。所以，读取部分没有问题。</p>
+<p>测试还发现，使用<code>cv::VideoCapture(source)</code> 读取的视频都是在cpu中进行解码处理。且解码后的帧为 BGR 数据，而不是YUV420，但并不影响后续拼接操作。</p>
+<h3 id="1-2-拼接"><a href="#1-2-拼接" class="headerlink" title="1.2 拼接"></a>1.2 拼接</h3><p>视频读取后便可很容易地获取每一帧，拼接部分只需要对每一帧进行操作即可。 BGR 数据反而解决了 UV 数据不可分的问题。</p>
+<h3 id="1-3-写视频"><a href="#1-3-写视频" class="headerlink" title="1.3 写视频"></a>1.3 写视频</h3><p>在视频写入之前的操作都没有什么大的问题，视频写入使用 <code>cv::VideoWriter Class</code> 进行操作。该类可以通过 <code>VideoWriter::fourcc(&#39;H&#39;, &#39;E&#39;, &#39;V&#39;, &#39;C&#39;)</code>选择编码方式。</p>
+<p>当我们选择 H264 （<code>VideoWriter::fourcc(&#39;X&#39;, &#39;2&#39;, &#39;6&#39;, &#39;4&#39;)</code>）编码时，提示信息如下：</p>
+<p><img src="/2019/03/01/2019-周报4/week4-h264-write.png" alt="图2.opencv-h264-write"></p>
+<p>提示缺少 <code>openh264-1.6.0-win64msvc.dll</code> 文件，OpenCV默认情况下没有编译此文件，可通过下载 <a href="https://github.com/cisco/openh264/releases/tag/v1.6.0" target="_blank" rel="noopener">openh264-1.6.0-win64msvc.dll.bz2</a>  文件解决此问题。</p>
+<p>当我们选择 H265 编码时，提示信息如下：</p>
+<p><img src="/2019/03/01/2019-周报4/week4-h265-write.png" alt="图3.opencv-h265-write"></p>
+<p>表示根本找不到此编码方式，opencv目前还不支持 H265 编码。官方论坛上此问题也没得到解决<a href="http://answers.opencv.org/question/200752/could-i-use-videowriter-to-save-the-video-as-h265hevc-format/" target="_blank" rel="noopener">官方论坛相关问题</a>  </p>
+<p>实验表明 OpenCV 虽然支持 H264,265的解码，但是对编码的支持不够友好，官方文档对此问题专门做出了说明，如下：</p>
+<p><img src="/2019/03/01/2019-周报4/week4-The-structure-of-a-video.png" alt="图4.The structure of a video"></p>
+<h3 id="1-4-GPU解决方案"><a href="#1-4-GPU解决方案" class="headerlink" title="1.4 GPU解决方案"></a>1.4 GPU解决方案</h3><p>以上操作均是在CPU中处理实现，在查询并阅读opencv官方文档之后发现</p>
+<ul>
+<li><code>cv::cudacodec::VideoReader Class</code> </li>
+<li><code>cv::cudacodec::VideoWriter Class</code></li>
+<li><code>cv::cuda::GpuMat Class</code></li>
+</ul>
+<p>等GPU中的视频读写，帧操作方法。但是资料较少，暂时还没有使用代码实现相应的功能，具体编解码支持情况还没调查清楚。</p>
+<h3 id="1-5-总结"><a href="#1-5-总结" class="headerlink" title="1.5 总结"></a>1.5 总结</h3><p>实验表明，解码，拼接 部分，在 cpu 中能够正常完成。并且容易推测，在GPU中也能完成 解码，拼接部分任务。目前问题主要出在编码部分，视频编码不是OpenCV的主要关注点，目前仅能支持 H264的编码。</p>
+<h3 id="1-6-参考资料"><a href="#1-6-参考资料" class="headerlink" title="1.6 参考资料"></a>1.6 参考资料</h3><ul>
+<li><a href="https://docs.opencv.org/3.4/d0/da7/videoio_overview.html" target="_blank" rel="noopener">Video I/O with OpenCV Overview</a></li>
+</ul>
+<ul>
+<li><a href="https://docs.opencv.org/master/d5/dc4/tutorial_video_input_psnr_ssim.html" target="_blank" rel="noopener">Video Input with OpenCV and similarity measurement</a></li>
+<li><a href="https://docs.opencv.org/3.4.5/d7/d9e/tutorial_video_write.html" target="_blank" rel="noopener">Creating a video with OpenCV</a></li>
+<li><a href="https://docs.opencv.org/3.4.5/dd/d9e/classcv_1_1VideoWriter.html" target="_blank" rel="noopener">cv::VideoWriter Class Reference</a></li>
+<li><a href="http://www.fourcc.org/codecs.php" target="_blank" rel="noopener">Video Codecs by FOURCC</a></li>
+<li><a href="https://docs.opencv.org/3.4/db/ded/classcv_1_1cudacodec_1_1VideoReader.html" target="_blank" rel="noopener">cv::cudacodec::VideoReader Class Reference</a></li>
+<li><a href="https://docs.opencv.org/3.3.0/d0/d60/classcv_1_1cuda_1_1GpuMat.html" target="_blank" rel="noopener">cv::cuda::GpuMat Class Reference</a></li>
+<li><a href="https://docs.opencv.org/master/dd/d3d/tutorial_gpu_basics_similarity.html" target="_blank" rel="noopener">Similarity check (PNSR and SSIM) on the GPU</a></li>
+<li><a href="https://docs.opencv.org/3.4.0/df/dde/classcv_1_1cudacodec_1_1VideoWriter.html#a6318b8266c824bd17081940a7930b18e" target="_blank" rel="noopener">cv::cudacodec::VideoWriter Class Reference</a></li>
+</ul>
+<h1 id="2-pytorch官方资料翻译"><a href="#2-pytorch官方资料翻译" class="headerlink" title="2 pytorch官方资料翻译"></a>2 pytorch官方资料翻译</h1><p><a href="https://blog.csdn.net/weixin_36811328/article/details/87905208" target="_blank" rel="noopener">深入理解TORCH.NN</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/03/01/2019-周报4/" data-id="cjsq5dmzo0001v8u70glfd5iz" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/03/01/2019-周报4/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/01/2019-周报4/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-2019-周报3" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -337,7 +501,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/02/22/2019-周报3/" data-id="cjsg5ruoh0001lsu7kxvnen0p" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/02/22/2019-周报3/" data-id="cjsq5dmzt0004v8u7er0cbyq0" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -405,7 +569,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/02/22/2019-周报3/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/02/22/2019-周报3/">Comentarios</a>
+        <a href="http://yoursite.com/2019/02/22/2019-周报3/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/02/22/2019-周报3/">Comments</a>
     
 
         </footer>
@@ -503,7 +667,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjsg5ruol0003lsu76muy4w3v" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjsq5dmzx0008v8u713tlc2pc" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -571,7 +735,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/01/31/2019-周报2/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/31/2019-周报2/">Comentarios</a>
+        <a href="http://yoursite.com/2019/01/31/2019-周报2/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/31/2019-周报2/">Comments</a>
     
 
         </footer>
@@ -670,7 +834,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjsg5ruom0004lsu76pdcdj9h" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjsq5dmzr0003v8u7bce2g0wx" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -738,7 +902,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/01/24/2019-周报1/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/24/2019-周报1/">Comentarios</a>
+        <a href="http://yoursite.com/2019/01/24/2019-周报1/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/24/2019-周报1/">Comments</a>
     
 
         </footer>
@@ -800,7 +964,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjsg5ruon0005lsu7au1ziw4k" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjsq5dmzv0005v8u7ty5hxjy4" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -868,7 +1032,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/01/21/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/21/hello-world/">Comentarios</a>
+        <a href="http://yoursite.com/2019/01/21/hello-world/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/01/21/hello-world/">Comments</a>
     
 
         </footer>
@@ -951,7 +1115,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjsg5ruob0000lsu7rab8cl35" class="article-share-link"><i class="fas fa-share"></i>Compartir</a>
+    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjsq5dmzk0000v8u7x7n6dwew" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1019,7 +1183,7 @@
 
             
     
-        <a href="http://yoursite.com/2018/09/15/学习报告-第二周/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2018/09/15/学习报告-第二周/">Comentarios</a>
+        <a href="http://yoursite.com/2018/09/15/学习报告-第二周/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2018/09/15/学习报告-第二周/">Comments</a>
     
 
         </footer>
@@ -1035,9 +1199,28 @@
    
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Recientes</h3>
+        <h3 class="widget-title">recent</h3>
         <div class="widget">
             <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/03/01/2019-周报4/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/03/01/2019-周报4/" class="title">2019-周报4</a></p>
+                            <p class="item-date"><time datetime="2019-03-01T05:58:28.000Z" itemprop="datePublished">2019-03-01</time></p>
+                        </div>
+                    </li>
                 
                     <li>
                         
@@ -1115,25 +1298,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2018/09/15/学习报告-第二周/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2018/09/15/学习报告-第二周/" class="title">学习报告-第二周</a></p>
-                            <p class="item-date"><time datetime="2018-09-15T03:31:52.000Z" itemprop="datePublished">2018-09-15</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1143,34 +1307,34 @@
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Archivos</h3>
+        <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Etiquetas</h3>
+        <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/report/">report</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/opencv-h264-h265/">opencv, h264, h265</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/report/">report</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
     
         
     <div class="widget-wrap">
-        <h3 class="widget-title">Nube de etiquetas</h3>
+        <h3 class="widget-title">tag cloud</h3>
         <div class="widget tagcloud">
-            <a href="/tags/report/" style="font-size: 10px;">report</a>
+            <a href="/tags/opencv-h264-h265/" style="font-size: 10px;">opencv, h264, h265</a> <a href="/tags/report/" style="font-size: 10px;">report</a>
         </div>
     </div>
 
     
         
     <div class="widget-wrap widget-list">
-        <h3 class="widget-title">Links</h3>
+        <h3 class="widget-title">links</h3>
         <div class="widget">
             <ul>
                 
