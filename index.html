@@ -158,7 +158,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                8
+                9
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -211,6 +211,157 @@
 
             
             <section id="main">
+    <article id="post-2019-周报7" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/03/22/2019-周报7/">2019-周报7</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/03/22/2019-周报7/">
+            <time datetime="2019-03-22T03:25:54.000Z" itemprop="datePublished">2019-03-22</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/deepwater/">deepwater</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周解决了之前编码丢帧的问题。将原来测试中的单路解码根据项目需求改为双路解码，但由于ffmpeg的解码方式，可能造成两路解码帧的不同步，便会造成后续拼接部分的错位。总体来说大的主框架已经完成，但还有很多细节的部分需要调试。目前拼接使用的上下分割的拼接方式，隔行拼接计算量更大，且 UV 数据的处理还未找到解决方法。</p>
+<p>除此之外阅读了 Geoffrey Hinton 关于模型简化的论文 <a href="http://arxiv.org/pdf/1503.02531" target="_blank" rel="noopener">Distilling the knowledge in a neural network</a> ，论文中使用复杂模型来训练简单模型，使简单模型具有复杂模型的性能，从而达到简化模型结构的目的。</p>
+<h1 id="1-视频编解码"><a href="#1-视频编解码" class="headerlink" title="1 视频编解码"></a>1 视频编解码</h1><p>上次实验之所以有丢帧的现象是因为没有没有清洗(flush the decoder/encoder) 编解码器。在解码的时候，将所有编码数据全部送到解码器之后，在结束前需要调用<code>avcodec_send_packet(dec_ctx, NULL)</code>往解码器输入 <code>NULL</code> 将解码器中剩余的帧”冲洗”出来，编码同理。</p>
+<h3 id="1-1-双路解码一路编码"><a href="#1-1-双路解码一路编码" class="headerlink" title="1.1 双路解码一路编码"></a>1.1 双路解码一路编码</h3><p>前面说到，<strong>ffmpeg</strong>使用以下四个函数进行编解码：</p>
+<ul>
+<li><code>avcodec_send_frame</code></li>
+<li><code>avcodec_receive_packet</code></li>
+<li><code>avcodec_send_packet</code></li>
+<li><code>avcodec_receive_frame</code></li>
+</ul>
+<p>但是这几个函数的使用并不是很有规律地进行。比如<code>avcodec_send_packet</code>与<code>avcodec_receive_frame</code>配合使用完成解码功能。调试发现，两个函数并非严格地交替执行，执行情况根据具体的编码视频不同而不相同。所以在双路解码时不能仅仅通过对以上两个解码函数使用上的同步而达到对解码后帧的同步。实际操作中，通过对两路解码状态的监测实现双路解码的同步。</p>
+<h3 id="1-2-编解码工作计划"><a href="#1-2-编解码工作计划" class="headerlink" title="1.2 编解码工作计划"></a>1.2 编解码工作计划</h3><p>基本完成了<code>deepwater.exe inputA inputB output</code>形式的可执行程序的主要内容，内部调用NVIDIA的编解码器进行编解码操作。根据之前的测试结果，奇偶分割或者上下分割两种方式，在未加去隔行处理的情况下表现差异不大，且均达到肉眼不可分的清晰度。但是YUV420P格式在奇偶分割的处理中存在着 UV 分量不可分的情况。</p>
+<p>除了以上提到的内容，对项目进一步的工作安排还不是太清楚。</p>
+<h1 id="2-提炼模型"><a href="#2-提炼模型" class="headerlink" title="2 提炼模型"></a>2 提炼模型</h1><p>提高模型性能的一个简单方法便是训练多个不同的模型，然后使用多个模型识别的平均值作为最总结果，但是这样会导致预测模型过于笨重，且耗费过多的计算资源。本篇文章通过特殊的训练方法从笨重的模型中提炼信息到简单模型中，从而简化模型。</p>
+<h3 id="2-1-实现方法"><a href="#2-1-实现方法" class="headerlink" title="2.1 实现方法"></a>2.1 实现方法</h3><p>本篇文章中提到的训练方法其实比较简单。例如，当我们训练分类模型时使用的标签均为<strong>硬标签(hard targets)，即所属类别处为1，其余为0</strong>。但我们实际训练模型的输出为该输入所属类别的概率(softmax)。</p>
+<p>$$<br>q_i = \frac{exp(z_i/T)}{\sum_jexp(z_j/T)}<br>$$</p>
+<p>而我们的标签(hard targets) 中却并没有体现出该图片像其它类别的概率，也就是说我们的硬标签中包含的信息不如softmax多。于是作者<strong>使用训练之后复杂模型的输出来作为图片的标签(soft targets) 来训练简单的模型</strong>。最后得出的结果表明，虽然大大简化了模型的结构，却可以得到接近复杂模型的正确率，如下图所示。</p>
+<p><img src="/2019/03/22/2019-周报7/week7-disstilled-accury.png" alt=""></p>
+<p>除此之外作者还针对不同的模型给出了多种训练方法，可通过调整上式子中的温度指数$T$ 来调节概率的分布情况。且使用不同的目标函数，不同的代价函数也均能使用这种方法来简化模型。使用软标签(soft targets)训练使得训练的速度更快，仅使用原训练数据 3% 的训练量即可达到</p>
+<p>接近原模型的测试正确率，具体指标如下图所示。</p>
+<p><img src="/2019/03/22/2019-周报7/week7-littledataset.png" alt=""></p>
+<h3 id="2-2-总结"><a href="#2-2-总结" class="headerlink" title="2.2 总结"></a>2.2 总结</h3><p>以上方法的核心便是通过对训练集标签的改进，将 hard targets 改进为 soft targets。使得标签能够提供更多的信息，从而可以达到简化模型的目的，在实际部署中非常有用。</p>
+<h3 id="2-3-参考文献"><a href="#2-3-参考文献" class="headerlink" title="2.3 参考文献"></a>2.3 参考文献</h3><ul>
+<li>Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. “Distilling the knowledge in a neural network.” arXiv preprint arXiv:1503.02531 (2015). <a href="http://arxiv.org/pdf/1503.02531" target="_blank" rel="noopener">pdf</a> (Godfather’s Work)</li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/03/22/2019-周报7/" data-id="cjtk6pn5t0005nwu79ljl20nu" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/03/22/2019-周报7/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/22/2019-周报7/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-2019-周报6" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -291,7 +442,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/14/2019-周报6/" data-id="cjtb8u13j0009ecu74qyfuulz" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/03/14/2019-周报6/" data-id="cjtk6pn5w0009nwu792wumq3t" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -457,7 +608,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/08/2019-周报5/" data-id="cjtb8u13h0005ecu7sum9yrkb" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/03/08/2019-周报5/" data-id="cjtk6pn5u0008nwu7imxrjg0t" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -621,7 +772,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/01/2019-周报4/" data-id="cjtb8u13i0008ecu75v2xfq82" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/03/01/2019-周报4/" data-id="cjtk6pn5q0003nwu7vfexef0q" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -830,7 +981,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/02/22/2019-周报3/" data-id="cjtb8u13g0004ecu71uhv948j" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/02/22/2019-周报3/" data-id="cjtk6pn5r0004nwu73b491or8" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1001,7 +1152,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjtb8u13f0003ecu7bndacp11" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/01/31/2019-周报2/" data-id="cjtk6pn61000enwu7dke40w83" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1173,7 +1324,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjtb8u13b0001ecu7eqbrct89" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/01/24/2019-周报1/" data-id="cjtk6pn5m0001nwu7rzlyei08" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1303,7 +1454,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjtb8u13n000cecu7ytxcktyn" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/01/21/hello-world/" data-id="cjtk6pn60000cnwu7tdv9ycaj" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1454,7 +1605,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjtb8u1370000ecu77f9j09xn" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2018/09/15/学习报告-第二周/" data-id="cjtk6pn5h0000nwu7djjq9od0" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1545,6 +1696,25 @@
                     <li>
                         
                         <div class="item-thumbnail">
+                            <a href="/2019/03/22/2019-周报7/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/03/22/2019-周报7/" class="title">2019-周报7</a></p>
+                            <p class="item-date"><time datetime="2019-03-22T03:25:54.000Z" itemprop="datePublished">2019-03-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
                             <a href="/2019/03/14/2019-周报6/" class="thumbnail">
     
     
@@ -1618,25 +1788,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <div class="item-thumbnail">
-                            <a href="/2019/01/31/2019-周报2/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div>
-                        
-                        <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/01/31/2019-周报2/" class="title">2019-周报2</a></p>
-                            <p class="item-date"><time datetime="2019-01-31T14:53:57.000Z" itemprop="datePublished">2019-01-31</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -1648,7 +1799,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -1657,7 +1808,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/deepwater/">deepwater</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/report/">report</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/deepwater/">deepwater</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/report/">report</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
