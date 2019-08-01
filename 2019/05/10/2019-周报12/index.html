@@ -3,23 +3,24 @@
 <head>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     
-    <title>2019-周报8 | lilei&#39;s blog</title>
+    <title>2019-周报12 | lilei&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
+    <meta name="description" content="本周针对 SHVC 论文中QP问题进行了试验，实验中将QP分为四组，分别为21-25，26-30，31-35，36-40。以下是相关细节和目前为止的训练结果。除此之外和吴畅一块儿参加了天池优酷的超分比赛。 1 数据集介绍根据网络结构，我们的每组数据由一个输入和两个标签组成，分别记为 input_lr label_lr label_sr 。其中 label_sr为高分辨原图，大小为82x82。 la">
 <meta name="keywords" content="weekly-report">
 <meta property="og:type" content="article">
-<meta property="og:title" content="2019-周报8">
-<meta property="og:url" content="http://yoursite.com/2019/03/29/2019-周报8/index.html">
+<meta property="og:title" content="2019-周报12">
+<meta property="og:url" content="http://yoursite.com/2019/05/10/2019-周报12/index.html">
 <meta property="og:site_name" content="lilei&#39;s blog">
-<meta property="og:description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
+<meta property="og:description" content="本周针对 SHVC 论文中QP问题进行了试验，实验中将QP分为四组，分别为21-25，26-30，31-35，36-40。以下是相关细节和目前为止的训练结果。除此之外和吴畅一块儿参加了天池优酷的超分比赛。 1 数据集介绍根据网络结构，我们的每组数据由一个输入和两个标签组成，分别记为 input_lr label_lr label_sr 。其中 label_sr为高分辨原图，大小为82x82。 la">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cgan.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cycleGAN-structure.png">
-<meta property="og:updated_time" content="2019-08-01T09:07:42.445Z">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr_compare.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/10/2019-周报12/week12-train_QP36_psnr_sr.png">
+<meta property="og:updated_time" content="2019-08-01T09:08:19.595Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="2019-周报8">
-<meta name="twitter:description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
-<meta name="twitter:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cgan.png">
+<meta name="twitter:title" content="2019-周报12">
+<meta name="twitter:description" content="本周针对 SHVC 论文中QP问题进行了试验，实验中将QP分为四组，分别为21-25，26-30，31-35，36-40。以下是相关细节和目前为止的训练结果。除此之外和吴畅一块儿参加了天池优酷的超分比赛。 1 数据集介绍根据网络结构，我们的每组数据由一个输入和两个标签组成，分别记为 input_lr label_lr label_sr 。其中 label_sr为高分辨原图，大小为82x82。 la">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr.png">
     
 
     
@@ -218,7 +219,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-2019-周报8" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-2019-周报12" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -226,7 +227,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            2019-周报8
+            2019-周报12
         </h1>
     
 
@@ -235,8 +236,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/03/29/2019-周报8/">
-            <time datetime="2019-03-29T02:01:21.000Z" itemprop="datePublished">2019-03-29</time>
+        <a href="/2019/05/10/2019-周报12/">
+            <time datetime="2019-05-10T02:50:56.000Z" itemprop="datePublished">2019-05-10</time>
         </a>
     </div>
 
@@ -256,44 +257,22 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>本周主要工作如下：</p>
-<ul>
-<li>总结了深度学习中常用的损失函数</li>
-<li>学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络</li>
-<li>翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像</li>
-<li>继续完善视频编解码代码，发现了新的bug，正在调试中</li>
-</ul>
-<h1 id="1-常用损失函数"><a href="#1-常用损失函数" class="headerlink" title="1 常用损失函数"></a>1 常用损失函数</h1><p>损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中数据的分布情况。目前仅仅是总结了部分常用损失函数的计算方法，其中涉及很多统计学最优化知识，对此仅仅是浅尝辄止，其中更多的原理还需要以后慢慢总结体会，以下仅简要记录其计算方法。</p>
-<h3 id="1-1-MSE"><a href="#1-1-MSE" class="headerlink" title="1.1 MSE"></a>1.1 MSE</h3><p>均方误差算是最简单也是最经典的一种计算损失的方法，其中 $\hat y$ 为实际输出，$y$ 为标签。<br>$$<br>mse_loss =\frac{1}{N} \sum _{i=1} ^N (y_i - \hat y_i)^2<br>$$</p>
-<h3 id="1-2-CrossEntropy"><a href="#1-2-CrossEntropy" class="headerlink" title="1.2 CrossEntropy"></a>1.2 CrossEntropy</h3><p>交叉熵是从KL散度中引出，用于衡量两个分布之间差异的大小，其值总是大于等于0，两个分布越相似其值越接近于0。训练时的标签可以当成一种分布，实际输出堪称另一种分布，常与softmax层结合用于分类模型。<br>$$<br>CrossEntropy_loss = -\sum _i y_i·log\hat y_i<br>$$</p>
-<h3 id="1-3-log损失函数"><a href="#1-3-log损失函数" class="headerlink" title="1.3 log损失函数"></a>1.3 log损失函数</h3><p>log损失通常用于逻辑回归，是二分类中常用的损失函数，若二分类中使用mse损失会造成最后优化函数为非凹函数，不利于训练。其中 $x$ 表示输出该特征，$y$ 表示所属类别， $p(1/x)$ 表示输入特征 $x$ 属于类别 $1$ 的概率。<br>$$<br>log_loss = \begin{cases}<br>-log(p(1/x)), &amp;&amp;&amp;y=1 \<br>-log(1-p(1/x)),&amp;&amp;&amp;y=0<br>\end{cases}<br>$$<br>将上面分类书写的形式变换一下，便得到了BCE_loss，只不过是换了一个名字而已，效果与上式相同<br>$$<br>BCE_loss = -y·log(p(y/x)) - (1-y)·log(1 - p(y/x))<br>$$<br>逻辑回归是分类网络中基础又重要的一个网络，GAN网络中的discriminator便是使用这种二分类网络。比较GAN网络的损失函数便会发现相似之处<br>$$<br> \mathop{min} \limits_G\mathop{max} \limits_ D V(G,D) = E_{x∼pdata(x)}[logD(x)]+E_{z∼pz(z)}[log(1−D(G(x)))]<br>$$</p>
-<h3 id="1-4-Smooth-L1"><a href="#1-4-Smooth-L1" class="headerlink" title="1.4 Smooth L1"></a>1.4 Smooth L1</h3><p>smooth L1是何凯明提出的优化的MSE损失，能有有效地优化梯度爆炸问题。这个例子表明我们可以根据我们网络的具体表现适当调节我们的损失函数从而解决特定的训练问题。<br>$$<br>smooth_l1_loss  = \begin{cases}<br>0.5(x_i - y_i)^2, &amp;&amp;&amp;\mbox{if }&amp;|x_i - y_i|&lt;1 \<br>|x_i - y_i| - 0.5,&amp;&amp;&amp;otherwise<br>\end{cases}<br>$$</p>
-<h3 id="1-5-F-divergence"><a href="#1-5-F-divergence" class="headerlink" title="1.5 F-divergence"></a>1.5 F-divergence</h3><p>F-divergence是一个大的类，其中 $F$ 表示特定的函数，当函数 $F$ 不同便表示的不同的散度，上面提到的交叉熵便是 KL散度即 KL-divergence。其中KL使用的 $F$ 为 $t·logt$ 。F-divergence损失函数如下：<br>$$<br>D_f (P_{data}||P_g) = \int_x P_g(x)f(\frac{P_{data}(x)}{P_g(x)})\, dx<br>$$<br>目前还有很多损失函数没有总结，比如用于人脸识别的<a href="https://pytorch.org/docs/stable/nn.html?highlight=loss#torch.nn.TripletMarginLoss" target="_blank" rel="noopener">TripletMarginLoss </a> 比起一般的损失函数能够很好地将不同的人脸特征分开。总之损失函数对深度学习的影响非常重要，很多时候使用一种损失导致训练崩坏而换一种损失便能得到不错的效果。</p>
-<h1 id="2-GAN"><a href="#2-GAN" class="headerlink" title="2 GAN"></a>2 GAN</h1><p>作为目前生成网络中的老大，GAN的发展十分迅猛而且应用场景很多，十分有趣。阅读了GAN的论文，翻译了 <a href="https://blog.csdn.net/weixin_36811328/article/details/88420820" target="_blank" rel="noopener">PyTorch教程之DCGAN</a> 并学习CGAN, CycleGAN等优秀的GAN模型。</p>
-<p>GAN网络解决了很多之前没能解决的问题，不光对生成网络贡献巨大，也为非监督学习领域带来了重大的突破。在此之前的生成模型领域有一个很难解决的问题便是如何对生成的图像做评估，而GAN使用 discriminator网络来对生成图片做评估很好地解决了这一问题。</p>
-<h3 id="2-1-DCGAN"><a href="#2-1-DCGAN" class="headerlink" title="2.1 DCGAN"></a>2.1 DCGAN</h3><p>DCGAN即deep convolution GAN第一次将GAN网络应用到图像处理领域。输入为服从高斯分布的随机噪声，输出目标图像，其主要的改进如下：</p>
-<ol>
-<li>取消了所有的pooling层，在判别器网络中使用strided convolutions层代替，在生成器中使用fractional-strided convolutions代替</li>
-<li>在生成器与判别器中都加入了 batchnorm 层</li>
-<li>移除了隐藏层中的全连接层</li>
-<li>生成器中所有隐含层中使用ReLU激活函数，输出层使用Tanh激活函数</li>
-<li>判别器中激活函数都使用 LeakyReLU </li>
-</ol>
-<p>DCGAN使得GAN网络在图像处理得到了良好的训练，但是其输入输出并没有建立良好的联系，而很多实际应用中需要将输入 $z$ 与输出图像之间建立联系，而非随机生成。例如输入文字，产生相应图像，输入语言，产生相应的图像，于是CGAN应运而生。</p>
-<h3 id="2-2-CGAN"><a href="#2-2-CGAN" class="headerlink" title="2.2 CGAN"></a>2.2 CGAN</h3><p>CGAN即 conditional GANs，在网络中引入了条件信息，使得GAN网络生成的图片能和输入之间联系起来。CGAN的应用场景十分广泛，图像修复，图像匹配………..。其最初的训练步骤如下</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cgan.png" alt="图1.CGAN训练结构"></p>
-<p>但现在在此基础上有了更多新的结构产生，大多是对生成器与判别器进行改进而来。如上图所示通常来说只有一个判别器，目前新的结构通过引入更多的判别器，一个判断生成的图像是否realistic，另一个判断生成的图像是否match。引入的条件也越来越多，文字，语言，图像等都是常用的条件信息。</p>
-<h3 id="2-3-CycleGAN"><a href="#2-3-CycleGAN" class="headerlink" title="2.3 CycleGAN"></a>2.3 CycleGAN</h3><p>CycleGAN的这种环形结构并不新鲜，在之前的AutoEncoder中就有这种类似的结构，CycleGAN将这种环形结构与GAN相结合，更好地解决了对生成后图像的评价问题。</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cycleGAN-structure.png" alt="图2.CycleGAN结构"></p>
-<p>CGAN的训练需要很多很多成对的数据，通常这是很难获取的，而CycleGAN则完全为非监督学习，不需要成对的数据 (unpaired image-to-image)。这使得更多的训练任务变得可能，特别是在风格转换领域得到了广泛的应用。 </p>
-<p>近几年GAN的发展十分迅速，其相关的理论研究也在不断完善。除了通过结构对网络进行优化，还有很多在距离的度量方式上的重大突破，例如 LS-GAN, EB-GAN, WGAN, FisherGAN 等很多网络。这方面的理论知识相对更加复杂。</p>
-<h3 id="2-4-参考资料"><a href="#2-4-参考资料" class="headerlink" title="2.4 参考资料"></a>2.4 参考资料</h3><ul>
-<li><a href="http://openaccess.thecvf.com/content_ICCV_2017/papers/Zhu_Unpaired_Image-To-Image_Translation_ICCV_2017_paper.pdf" target="_blank" rel="noopener">Unpaired Image-To-Image Translation Using Cycle-Consistent Adversarial Networks</a></li>
-<li><a href="https://papers.nips.cc/paper/5423-generative-adversarial-nets.pdf" target="_blank" rel="noopener">Generative Adversarial Nets</a></li>
-<li><a href="http://openaccess.thecvf.com/content_cvpr_2017/papers/Isola_Image-To-Image_Translation_With_CVPR_2017_paper.pdf" target="_blank" rel="noopener">Image-to-Image Translation with Conditional Adversarial Networks</a></li>
-<li><a href="https://arxiv.org/pdf/1511.06434.pdf" target="_blank" rel="noopener">Unsupervised Representation Learning With Deep Convolutional Generative Adversarial Networks</a></li>
-<li><a href="https://www.bilibili.com/video/av24011528/?p=1" target="_blank" rel="noopener">李宏毅对抗生成网络(GAN)国语教程(2018)</a></li>
-</ul>
+            <p>本周针对 SHVC 论文中QP问题进行了试验，实验中将QP分为四组，分别为21-25，26-30，31-35，36-40。以下是相关细节和目前为止的训练结果。除此之外和吴畅一块儿参加了天池优酷的超分比赛。</p>
+<h2 id="1-数据集介绍"><a href="#1-数据集介绍" class="headerlink" title="1 数据集介绍"></a>1 数据集介绍</h2><p>根据网络结构，我们的每组数据由一个输入和两个标签组成，分别记为 <code>input_lr</code> <code>label_lr</code> <code>label_sr</code> 。其中 <code>label_sr</code>为高分辨原图，大小为82x82。 <code>label_lr</code> 为高分辨图通过bicubic下采样得到的低分辨图，大小为41x41。 <code>input_lr</code> 为低分辨图通过不同qp编码解码之后得到的噪声图。每五个QP为一组制作一个数据集，每个取96000张图，一组共480000张图。图片均通过BSDS500数据集裁剪增强得到。</p>
+<h2 id="2-网络结构"><a href="#2-网络结构" class="headerlink" title="2 网络结构"></a>2 网络结构</h2><p>训练使用的是师兄之前设计的网络结构，由去噪和超分两部分组成。去噪部分由9层卷积层组成，深度为64，卷积核为3x3，激活函数均使用ReLU。超分部分由14层卷积层组成，深度为64，卷积核为3x3，激活函数均使用ReLU。去噪与超分均使用全局残差。</p>
+<h2 id="3-结果分析"><a href="#3-结果分析" class="headerlink" title="3 结果分析"></a>3 结果分析</h2><p>实验结果表明将数据集由之前的单个QP改为现在五个QP混合的情况下，依然使用原网络并不能得到很好的效果。</p>
+<h4 id="3-1-混合训练"><a href="#3-1-混合训练" class="headerlink" title="3.1 混合训练"></a>3.1 混合训练</h4><p>首先是将超分部分与去噪部分混合训练，各自权重均为0.5。</p>
+<h5 id="3-1-1-去噪部分"><a href="#3-1-1-去噪部分" class="headerlink" title="3.1.1 去噪部分"></a>3.1.1 去噪部分</h5><p>由于使用了全局残差，去噪部分在一个epoch不到便达到饱和，psnr不再上涨，psnr值变化情况如下</p>
+<p><img src="/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr.png" alt="图1.train_QP21_psnr_lr"></p>
+<p>但是同原始输入图片数据对比易知，去噪部分并没有发挥出相应的作用。如下图红色框内所示，括号外面为去噪网络输出与标签图片之间的psnr值，括号内部为输入的噪声图片与标签之间的psnr值（下图使用数据集QP范围为21-25，所以带噪声图片psnr就已经很高）。结果表明去噪之后的图片psnr值并没有得到提升。</p>
+<p><img src="/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr_compare.png" alt="图2.train_QP21_psnr_lr_compare"></p>
+<h5 id="3-1-2-超分部分"><a href="#3-1-2-超分部分" class="headerlink" title="3.1.2 超分部分"></a>3.1.2 超分部分</h5><p>超分部分一直训练不上去，下图为<strong>QP 36-40</strong>之间时超分的psnr变化曲线。在现有的结构下改变网络的深度依然不能解决此问题。</p>
+<p><img src="/2019/05/10/2019-周报12/week12-train_QP36_psnr_sr.png" alt="图3.train_QP36_psnr_sr"></p>
+<h4 id="3-2-单独训练"><a href="#3-2-单独训练" class="headerlink" title="3.2 单独训练"></a>3.2 单独训练</h4><p>单独训练即超分部分loss的反向传播不影响到去噪部分的网络参数，结果与混合训练差别不大</p>
+<h5 id="3-2-1-去噪部分"><a href="#3-2-1-去噪部分" class="headerlink" title="3.2.1 去噪部分"></a>3.2.1 去噪部分</h5><p>单独训练时去噪部分收敛速度快于混合训练，收敛结果无明显差别</p>
+<h5 id="3-2-2-超分部分"><a href="#3-2-2-超分部分" class="headerlink" title="3.2.2 超分部分"></a>3.2.2 超分部分</h5><p>超分部分与混合训练无明显差别</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>训练过程中对网络进行修改激活函数，修改网络参数大小，修改学习率，修改超分网络与去噪网络的权重等操作，结果并没有得到明显的改善。</p>
+<p>暂时计划尝试一下其他网络结构，将去噪与超分部分单独训练，两部分均有不错效果的情况下再进行组合实验。</p>
 
         
         </div>
@@ -304,7 +283,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/29/2019-周报8/" data-id="cjysgcf2w000n8su7hr8xazsq" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/05/10/2019-周报12/" data-id="cjysgcf2y000q8su730dqq65l" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -372,7 +351,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/03/29/2019-周报8/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/29/2019-周报8/">Comments</a>
+        <a href="http://yoursite.com/2019/05/10/2019-周报12/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/05/10/2019-周报12/">Comments</a>
     
 
         </footer>
@@ -381,19 +360,19 @@
         
 <nav id="article-nav">
     
-        <a href="/2019/04/07/2019-周报9/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2019/05/17/2019-周报13/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">Newer</strong>
             <div class="article-nav-title">
                 
-                    2019-周报9
+                    2019-周报13
                 
             </div>
         </a>
     
     
-        <a href="/2019/03/22/2019-周报7/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2019/04/27/2019-周报11/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">Older</strong>
-            <div class="article-nav-title">2019-周报7</div>
+            <div class="article-nav-title">2019-周报11</div>
         </a>
     
 </nav>
@@ -586,9 +565,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://yoursite.com/2019/03/29/2019-周报8/';
+            this.page.url = 'http://yoursite.com/2019/05/10/2019-周报12/';
         
-        this.page.identifier = '2019-周报8';
+        this.page.identifier = '2019-周报12';
     };
     (function() { 
         var d = document, s = d.createElement('script');  

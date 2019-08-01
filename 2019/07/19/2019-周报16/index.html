@@ -3,23 +3,23 @@
 <head>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     
-    <title>2019-周报8 | lilei&#39;s blog</title>
+    <title>2019-周报16 | lilei&#39;s blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
+    <meta name="description" content="本周阅读VR和全景图的相关论文[1] [2] 初步了解了此领域的相关研究工作，重点阅读了全景图编解码的相关标准文件[3] [4] [5]。了解了JEVT关于全景图编码的测试工具包360Lib [6] [7] , 以及360o 视频到平面视频的投影算法ERP[8]，阅读了师兄之前关于VR实时编码的论文[9] [10]，对360o 视频编码有了初步的了解。针对之前SVC的试验，使用新的网络重新训练并得">
 <meta name="keywords" content="weekly-report">
 <meta property="og:type" content="article">
-<meta property="og:title" content="2019-周报8">
-<meta property="og:url" content="http://yoursite.com/2019/03/29/2019-周报8/index.html">
+<meta property="og:title" content="2019-周报16">
+<meta property="og:url" content="http://yoursite.com/2019/07/19/2019-周报16/index.html">
 <meta property="og:site_name" content="lilei&#39;s blog">
-<meta property="og:description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
+<meta property="og:description" content="本周阅读VR和全景图的相关论文[1] [2] 初步了解了此领域的相关研究工作，重点阅读了全景图编解码的相关标准文件[3] [4] [5]。了解了JEVT关于全景图编码的测试工具包360Lib [6] [7] , 以及360o 视频到平面视频的投影算法ERP[8]，阅读了师兄之前关于VR实时编码的论文[9] [10]，对360o 视频编码有了初步的了解。针对之前SVC的试验，使用新的网络重新训练并得">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cgan.png">
-<meta property="og:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cycleGAN-structure.png">
-<meta property="og:updated_time" content="2019-08-01T09:07:42.445Z">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/2019-周报16/D:/lilei/HEXO/source/_posts/week16-VideoTestingProcedure.png">
+<meta property="og:image" content="http://yoursite.com/2019/07/19/2019-周报16/D:/lilei/HEXO/source/_posts/week16-QPcompare.png">
+<meta property="og:updated_time" content="2019-08-01T09:09:06.386Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="2019-周报8">
-<meta name="twitter:description" content="本周主要工作如下：  总结了深度学习中常用的损失函数 学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络 翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像 继续完善视频编解码代码，发现了新的bug，正在调试中  1 常用损失函数损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中">
-<meta name="twitter:image" content="http://yoursite.com/2019/03/29/2019-周报8/week8-cgan.png">
+<meta name="twitter:title" content="2019-周报16">
+<meta name="twitter:description" content="本周阅读VR和全景图的相关论文[1] [2] 初步了解了此领域的相关研究工作，重点阅读了全景图编解码的相关标准文件[3] [4] [5]。了解了JEVT关于全景图编码的测试工具包360Lib [6] [7] , 以及360o 视频到平面视频的投影算法ERP[8]，阅读了师兄之前关于VR实时编码的论文[9] [10]，对360o 视频编码有了初步的了解。针对之前SVC的试验，使用新的网络重新训练并得">
+<meta name="twitter:image" content="http://yoursite.com/2019/07/19/2019-周报16/D:/lilei/HEXO/source/_posts/week16-VideoTestingProcedure.png">
     
 
     
@@ -218,7 +218,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-2019-周报8" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-2019-周报16" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -226,7 +226,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            2019-周报8
+            2019-周报16
         </h1>
     
 
@@ -235,8 +235,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/03/29/2019-周报8/">
-            <time datetime="2019-03-29T02:01:21.000Z" itemprop="datePublished">2019-03-29</time>
+        <a href="/2019/07/19/2019-周报16/">
+            <time datetime="2019-07-19T06:23:12.000Z" itemprop="datePublished">2019-07-19</time>
         </a>
     </div>
 
@@ -256,44 +256,27 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>本周主要工作如下：</p>
-<ul>
-<li>总结了深度学习中常用的损失函数</li>
-<li>学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络</li>
-<li>翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像</li>
-<li>继续完善视频编解码代码，发现了新的bug，正在调试中</li>
-</ul>
-<h1 id="1-常用损失函数"><a href="#1-常用损失函数" class="headerlink" title="1 常用损失函数"></a>1 常用损失函数</h1><p>损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中数据的分布情况。目前仅仅是总结了部分常用损失函数的计算方法，其中涉及很多统计学最优化知识，对此仅仅是浅尝辄止，其中更多的原理还需要以后慢慢总结体会，以下仅简要记录其计算方法。</p>
-<h3 id="1-1-MSE"><a href="#1-1-MSE" class="headerlink" title="1.1 MSE"></a>1.1 MSE</h3><p>均方误差算是最简单也是最经典的一种计算损失的方法，其中 $\hat y$ 为实际输出，$y$ 为标签。<br>$$<br>mse_loss =\frac{1}{N} \sum _{i=1} ^N (y_i - \hat y_i)^2<br>$$</p>
-<h3 id="1-2-CrossEntropy"><a href="#1-2-CrossEntropy" class="headerlink" title="1.2 CrossEntropy"></a>1.2 CrossEntropy</h3><p>交叉熵是从KL散度中引出，用于衡量两个分布之间差异的大小，其值总是大于等于0，两个分布越相似其值越接近于0。训练时的标签可以当成一种分布，实际输出堪称另一种分布，常与softmax层结合用于分类模型。<br>$$<br>CrossEntropy_loss = -\sum _i y_i·log\hat y_i<br>$$</p>
-<h3 id="1-3-log损失函数"><a href="#1-3-log损失函数" class="headerlink" title="1.3 log损失函数"></a>1.3 log损失函数</h3><p>log损失通常用于逻辑回归，是二分类中常用的损失函数，若二分类中使用mse损失会造成最后优化函数为非凹函数，不利于训练。其中 $x$ 表示输出该特征，$y$ 表示所属类别， $p(1/x)$ 表示输入特征 $x$ 属于类别 $1$ 的概率。<br>$$<br>log_loss = \begin{cases}<br>-log(p(1/x)), &amp;&amp;&amp;y=1 \<br>-log(1-p(1/x)),&amp;&amp;&amp;y=0<br>\end{cases}<br>$$<br>将上面分类书写的形式变换一下，便得到了BCE_loss，只不过是换了一个名字而已，效果与上式相同<br>$$<br>BCE_loss = -y·log(p(y/x)) - (1-y)·log(1 - p(y/x))<br>$$<br>逻辑回归是分类网络中基础又重要的一个网络，GAN网络中的discriminator便是使用这种二分类网络。比较GAN网络的损失函数便会发现相似之处<br>$$<br> \mathop{min} \limits_G\mathop{max} \limits_ D V(G,D) = E_{x∼pdata(x)}[logD(x)]+E_{z∼pz(z)}[log(1−D(G(x)))]<br>$$</p>
-<h3 id="1-4-Smooth-L1"><a href="#1-4-Smooth-L1" class="headerlink" title="1.4 Smooth L1"></a>1.4 Smooth L1</h3><p>smooth L1是何凯明提出的优化的MSE损失，能有有效地优化梯度爆炸问题。这个例子表明我们可以根据我们网络的具体表现适当调节我们的损失函数从而解决特定的训练问题。<br>$$<br>smooth_l1_loss  = \begin{cases}<br>0.5(x_i - y_i)^2, &amp;&amp;&amp;\mbox{if }&amp;|x_i - y_i|&lt;1 \<br>|x_i - y_i| - 0.5,&amp;&amp;&amp;otherwise<br>\end{cases}<br>$$</p>
-<h3 id="1-5-F-divergence"><a href="#1-5-F-divergence" class="headerlink" title="1.5 F-divergence"></a>1.5 F-divergence</h3><p>F-divergence是一个大的类，其中 $F$ 表示特定的函数，当函数 $F$ 不同便表示的不同的散度，上面提到的交叉熵便是 KL散度即 KL-divergence。其中KL使用的 $F$ 为 $t·logt$ 。F-divergence损失函数如下：<br>$$<br>D_f (P_{data}||P_g) = \int_x P_g(x)f(\frac{P_{data}(x)}{P_g(x)})\, dx<br>$$<br>目前还有很多损失函数没有总结，比如用于人脸识别的<a href="https://pytorch.org/docs/stable/nn.html?highlight=loss#torch.nn.TripletMarginLoss" target="_blank" rel="noopener">TripletMarginLoss </a> 比起一般的损失函数能够很好地将不同的人脸特征分开。总之损失函数对深度学习的影响非常重要，很多时候使用一种损失导致训练崩坏而换一种损失便能得到不错的效果。</p>
-<h1 id="2-GAN"><a href="#2-GAN" class="headerlink" title="2 GAN"></a>2 GAN</h1><p>作为目前生成网络中的老大，GAN的发展十分迅猛而且应用场景很多，十分有趣。阅读了GAN的论文，翻译了 <a href="https://blog.csdn.net/weixin_36811328/article/details/88420820" target="_blank" rel="noopener">PyTorch教程之DCGAN</a> 并学习CGAN, CycleGAN等优秀的GAN模型。</p>
-<p>GAN网络解决了很多之前没能解决的问题，不光对生成网络贡献巨大，也为非监督学习领域带来了重大的突破。在此之前的生成模型领域有一个很难解决的问题便是如何对生成的图像做评估，而GAN使用 discriminator网络来对生成图片做评估很好地解决了这一问题。</p>
-<h3 id="2-1-DCGAN"><a href="#2-1-DCGAN" class="headerlink" title="2.1 DCGAN"></a>2.1 DCGAN</h3><p>DCGAN即deep convolution GAN第一次将GAN网络应用到图像处理领域。输入为服从高斯分布的随机噪声，输出目标图像，其主要的改进如下：</p>
+            <p>本周阅读VR和全景图的相关论文[1] [2] 初步了解了此领域的相关研究工作，重点阅读了全景图编解码的相关标准文件[3] [4] [5]。了解了JEVT关于全景图编码的测试工具包360Lib [6] [7] , 以及360<sup>o</sup> 视频到平面视频的投影算法ERP[8]，阅读了师兄之前关于VR实时编码的论文[9] [10]，对360<sup>o</sup> 视频编码有了初步的了解。针对之前SVC的试验，使用新的网络重新训练并得出了结果。除此之外最近在补专业相关的数学知识。</p>
+<h1 id="1-360o-视频编码"><a href="#1-360o-视频编码" class="headerlink" title="1. 360o 视频编码"></a>1. 360<sup>o</sup> 视频编码</h1><p>通过在谷歌学术上搜索关键词 <em>Virtual Reality</em> 和 <em>panorama</em> 阅读引用量最多的文献，大致了解了VR和全景图领域的主要研究内容。<em>Virtual Reality</em> 的搜索结果大多是概念性的东西，以及各种相关的专利，没有太大的参考价值。<em>panorama</em> 大多研究内容是围绕全景图片的拼接，立体图片拼接相关的研究。</p>
+<p>重点调查了有关VR编码方向的相关标准，主要参考了<strong>JVET common test conditions and evaluation procedures for 360° video</strong> 和 <strong>Subjective testing method for 360° Video projection formats using HEVC</strong> 两个文件。</p>
+<h3 id="1-1-编码流程"><a href="#1-1-编码流程" class="headerlink" title="1.1 编码流程"></a>1.1 编码流程</h3><p><img src="/2019/07/19/2019-周报16/D:/lilei\HEXO\source\_posts\week16-VideoTestingProcedure.png" alt="week16-VideoTestingProcedure"></p>
+<p>编码流程如上图所示，VR投影方式采用等距柱状投影(Equi-Rectangular Projection, ERP)。和传统编解码相比仅仅多了投影的步骤，将立体图投影为平面图进行编解码。<strong>JVET</strong>官方提供了 <strong>360Lib</strong> 工具包来实现投影操作，并且支持与 <strong>H265/H266</strong>等测试工具结合使用。</p>
+<h1 id="2-SVC新增试验结果"><a href="#2-SVC新增试验结果" class="headerlink" title="2. SVC新增试验结果"></a>2. SVC新增试验结果</h1><p><img src="/2019/07/19/2019-周报16/D:/lilei\HEXO\source\_posts\week16-QPcompare.png" alt="week16-QPcompare"></p>
+<p>SVC新增试验结果如上图所示，最短收敛最快的曲线为论文中使用网络的结果(因为加载了预训练参数，所以开始收敛很快，且总训练Epoch最少)。另外两条曲线，最蓝色的曲线为超分部分使用WDSR替代之后的结果，橙色最长的曲线为去噪超分分别使用DnCNN和WDSR替代之后的结果。观察曲线可以基本可以得到以下两个结果。</p>
 <ol>
-<li>取消了所有的pooling层，在判别器网络中使用strided convolutions层代替，在生成器中使用fractional-strided convolutions代替</li>
-<li>在生成器与判别器中都加入了 batchnorm 层</li>
-<li>移除了隐藏层中的全连接层</li>
-<li>生成器中所有隐含层中使用ReLU激活函数，输出层使用Tanh激活函数</li>
-<li>判别器中激活函数都使用 LeakyReLU </li>
+<li>超分部分使用更强的WDSR替代之后，psnr相比之前提高0.3-0.5db</li>
+<li>去噪部分使用DnCNN替代之后没有明显差别</li>
 </ol>
-<p>DCGAN使得GAN网络在图像处理得到了良好的训练，但是其输入输出并没有建立良好的联系，而很多实际应用中需要将输入 $z$ 与输出图像之间建立联系，而非随机生成。例如输入文字，产生相应图像，输入语言，产生相应的图像，于是CGAN应运而生。</p>
-<h3 id="2-2-CGAN"><a href="#2-2-CGAN" class="headerlink" title="2.2 CGAN"></a>2.2 CGAN</h3><p>CGAN即 conditional GANs，在网络中引入了条件信息，使得GAN网络生成的图片能和输入之间联系起来。CGAN的应用场景十分广泛，图像修复，图像匹配………..。其最初的训练步骤如下</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cgan.png" alt="图1.CGAN训练结构"></p>
-<p>但现在在此基础上有了更多新的结构产生，大多是对生成器与判别器进行改进而来。如上图所示通常来说只有一个判别器，目前新的结构通过引入更多的判别器，一个判断生成的图像是否realistic，另一个判断生成的图像是否match。引入的条件也越来越多，文字，语言，图像等都是常用的条件信息。</p>
-<h3 id="2-3-CycleGAN"><a href="#2-3-CycleGAN" class="headerlink" title="2.3 CycleGAN"></a>2.3 CycleGAN</h3><p>CycleGAN的这种环形结构并不新鲜，在之前的AutoEncoder中就有这种类似的结构，CycleGAN将这种环形结构与GAN相结合，更好地解决了对生成后图像的评价问题。</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cycleGAN-structure.png" alt="图2.CycleGAN结构"></p>
-<p>CGAN的训练需要很多很多成对的数据，通常这是很难获取的，而CycleGAN则完全为非监督学习，不需要成对的数据 (unpaired image-to-image)。这使得更多的训练任务变得可能，特别是在风格转换领域得到了广泛的应用。 </p>
-<p>近几年GAN的发展十分迅速，其相关的理论研究也在不断完善。除了通过结构对网络进行优化，还有很多在距离的度量方式上的重大突破，例如 LS-GAN, EB-GAN, WGAN, FisherGAN 等很多网络。这方面的理论知识相对更加复杂。</p>
-<h3 id="2-4-参考资料"><a href="#2-4-参考资料" class="headerlink" title="2.4 参考资料"></a>2.4 参考资料</h3><ul>
-<li><a href="http://openaccess.thecvf.com/content_ICCV_2017/papers/Zhu_Unpaired_Image-To-Image_Translation_ICCV_2017_paper.pdf" target="_blank" rel="noopener">Unpaired Image-To-Image Translation Using Cycle-Consistent Adversarial Networks</a></li>
-<li><a href="https://papers.nips.cc/paper/5423-generative-adversarial-nets.pdf" target="_blank" rel="noopener">Generative Adversarial Nets</a></li>
-<li><a href="http://openaccess.thecvf.com/content_cvpr_2017/papers/Isola_Image-To-Image_Translation_With_CVPR_2017_paper.pdf" target="_blank" rel="noopener">Image-to-Image Translation with Conditional Adversarial Networks</a></li>
-<li><a href="https://arxiv.org/pdf/1511.06434.pdf" target="_blank" rel="noopener">Unsupervised Representation Learning With Deep Convolutional Generative Adversarial Networks</a></li>
-<li><a href="https://www.bilibili.com/video/av24011528/?p=1" target="_blank" rel="noopener">李宏毅对抗生成网络(GAN)国语教程(2018)</a></li>
-</ul>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>[1]. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1460-2466.1992.tb00812.x" target="_blank" rel="noopener">Defining  virtual reality : Dimensions determining telepresence</a></p>
+<p>[2]. <a href="http://faculty.cse.tamu.edu/jchai/CPSC641/iccv2003.pdf" target="_blank" rel="noopener">Recognising panoramas</a></p>
+<p>[3]. <a href="http://phenix.it-sudparis.eu/jvet/doc_end_user/current_document.php?id=4840" target="_blank" rel="noopener">Common Test Conditions 360 (JVET-L1012)</a></p>
+<p>[4]. <a href="https://mpeg.chiariglione.org/standards/exploration/future-video-coding/n16892-subjective-testing-method-360%C2%B0-video-projection" target="_blank" rel="noopener">N16892, Subjective testing method for 360° Video projection formats using HEVC</a></p>
+<p>[5]. <a href="https://mpeg.chiariglione.org/standards/exploration/future-video-coding/n16702-common-test-conditions-and-evaluation-procedures" target="_blank" rel="noopener">N16702 Common Test Conditions and Evaluation Procedures for 360 Video Coding</a></p>
+<p>[6]. <a href="https://jvet.hhi.fraunhofer.de/svn/svn_360Lib/" target="_blank" rel="noopener">360Lib</a></p>
+<p>[7]. <a href="https://blog.csdn.net/fan2273/article/details/77836660" target="_blank" rel="noopener">JVET专家组下360Lib全景视频投影格式测试平台</a></p>
+<p>[8]. <a href="https://blog.csdn.net/lin453701006/article/details/76919188" target="_blank" rel="noopener">360Lib中的坐标系</a></p>
+<p>[9]. <a href="https://ieeexplore.ieee.org/abstract/document/8076869/" target="_blank" rel="noopener">Scalable video coding based on user’s view for real-time virtual reality applications</a></p>
+<p>[10]. <a href="https://link.springer.com/chapter/10.1007/978-3-319-77383-4_75" target="_blank" rel="noopener">Scalable Video Coding Based on the User’s View for Real-Time Virtual Reality Applications</a></p>
 
         
         </div>
@@ -304,7 +287,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/29/2019-周报8/" data-id="cjysgcf2w000n8su7hr8xazsq" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/07/19/2019-周报16/" data-id="cjysgcf3400108su7iw5bjdiz" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -372,7 +355,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/03/29/2019-周报8/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/29/2019-周报8/">Comments</a>
+        <a href="http://yoursite.com/2019/07/19/2019-周报16/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/07/19/2019-周报16/">Comments</a>
     
 
         </footer>
@@ -381,19 +364,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2019/04/07/2019-周报9/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">Newer</strong>
-            <div class="article-nav-title">
-                
-                    2019-周报9
-                
-            </div>
-        </a>
     
-    
-        <a href="/2019/03/22/2019-周报7/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2019/05/29/2019-周报15/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">Older</strong>
-            <div class="article-nav-title">2019-周报7</div>
+            <div class="article-nav-title">2019-周报15</div>
         </a>
     
 </nav>
@@ -586,9 +560,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://yoursite.com/2019/03/29/2019-周报8/';
+            this.page.url = 'http://yoursite.com/2019/07/19/2019-周报16/';
         
-        this.page.identifier = '2019-周报8';
+        this.page.identifier = '2019-周报16';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
