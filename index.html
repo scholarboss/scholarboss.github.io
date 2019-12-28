@@ -158,7 +158,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                18
+                29
                 <span>posts</span>
             </div>
             <div class="article-info-block">
@@ -211,7 +211,7 @@
 
             
             <section id="main">
-    <article id="post-2019-周报16" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2019-周报29" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -219,7 +219,7 @@
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2019/07/19/2019-周报16/">2019-周报16</a>
+            <a class="article-title" href="/2019/12/22/2019-周报29/">2019-周报29</a>
         </h1>
     
 
@@ -228,8 +228,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/07/19/2019-周报16/">
-            <time datetime="2019-07-19T06:23:12.000Z" itemprop="datePublished">2019-07-19</time>
+        <a href="/2019/12/22/2019-周报29/">
+            <time datetime="2019-12-22T06:47:01.000Z" itemprop="datePublished">2019-12-22</time>
         </a>
     </div>
 
@@ -249,1248 +249,200 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>本周阅读VR和全景图的相关论文[1] [2] 初步了解了此领域的相关研究工作，重点阅读了全景图编解码的相关标准文件[3] [4] [5]。了解了JEVT关于全景图编码的测试工具包360Lib [6] [7] , 以及360<sup>o</sup> 视频到平面视频的投影算法ERP[8]，阅读了师兄之前关于VR实时编码的论文[9] [10]，对360<sup>o</sup> 视频编码有了初步的了解。针对之前SVC的试验，使用新的网络重新训练并得出了结果。除此之外最近在补专业相关的数学知识。</p>
-<h1 id="1-360o-视频编码"><a href="#1-360o-视频编码" class="headerlink" title="1. 360o 视频编码"></a>1. 360<sup>o</sup> 视频编码</h1><p>通过在谷歌学术上搜索关键词 <em>Virtual Reality</em> 和 <em>panorama</em> 阅读引用量最多的文献，大致了解了VR和全景图领域的主要研究内容。<em>Virtual Reality</em> 的搜索结果大多是概念性的东西，以及各种相关的专利，没有太大的参考价值。<em>panorama</em> 大多研究内容是围绕全景图片的拼接，立体图片拼接相关的研究。</p>
-<p>重点调查了有关VR编码方向的相关标准，主要参考了<strong>JVET common test conditions and evaluation procedures for 360° video</strong> 和 <strong>Subjective testing method for 360° Video projection formats using HEVC</strong> 两个文件。</p>
-<h3 id="1-1-编码流程"><a href="#1-1-编码流程" class="headerlink" title="1.1 编码流程"></a>1.1 编码流程</h3><p><img src="/2019/07/19/2019-周报16/D:/lilei\HEXO\source\_posts\week16-VideoTestingProcedure.png" alt="week16-VideoTestingProcedure"></p>
-<p>编码流程如上图所示，VR投影方式采用等距柱状投影(Equi-Rectangular Projection, ERP)。和传统编解码相比仅仅多了投影的步骤，将立体图投影为平面图进行编解码。<strong>JVET</strong>官方提供了 <strong>360Lib</strong> 工具包来实现投影操作，并且支持与 <strong>H265/H266</strong>等测试工具结合使用。</p>
-<h1 id="2-SVC新增试验结果"><a href="#2-SVC新增试验结果" class="headerlink" title="2. SVC新增试验结果"></a>2. SVC新增试验结果</h1><p><img src="/2019/07/19/2019-周报16/D:/lilei\HEXO\source\_posts\week16-QPcompare.png" alt="week16-QPcompare"></p>
-<p>SVC新增试验结果如上图所示，最短收敛最快的曲线为论文中使用网络的结果(因为加载了预训练参数，所以开始收敛很快，且总训练Epoch最少)。另外两条曲线，最蓝色的曲线为超分部分使用WDSR替代之后的结果，橙色最长的曲线为去噪超分分别使用DnCNN和WDSR替代之后的结果。观察曲线可以基本可以得到以下两个结果。</p>
+            <p>本周实验了一些的网络结构，观察了各种结构带来的增益情况，以及相应的优缺点。主要试验了以下结构的情况：</p>
+<ul>
+<li>non-local</li>
+<li>channel attention</li>
+<li>spatial attention</li>
+<li>multi-scale</li>
+<li>深度adaptive</li>
+<li>宽度adaptive</li>
+</ul>
+<h2 id="1-试验过程记录"><a href="#1-试验过程记录" class="headerlink" title="1 试验过程记录"></a>1 试验过程记录</h2><p>以下试验结果均是在jonny码流的QP37下测试得到，BaseModel采用简单的卷积堆叠得到, 结果如下:</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>BaseModle</th>
+<th>+NonLocal</th>
+<th>+spatial&amp;channelAttention</th>
+<th>+multi-scale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PSNR_GAIN</td>
+<td>0.8227</td>
+<td>0.8401</td>
+<td>0.8869</td>
+<td>0.9102</td>
+</tr>
+</tbody>
+</table>
+<p>参数量均控制在20k上下，最后 <strong>multi-scale</strong> 指同时加了spatial attention, channel attention, multi-scale的结果，multi-scale之间共享参数。</p>
+<h2 id="2-Adaptive"><a href="#2-Adaptive" class="headerlink" title="2 Adaptive"></a>2 Adaptive</h2><p>adapitve目前有两种方法可供选择, 深度adaptive和宽度adaptive. 深度adaptive性价比更高, 但由于不能并行化处理深度计算等原因带来的训练时间会比宽度adaptive更长. 宽度adaptive参数和增益的性价比差一些.</p>
+<h2 id="3-pre-train"><a href="#3-pre-train" class="headerlink" title="3 pre-train"></a>3 pre-train</h2><p>接下来打算做预训练的试验, 观察预训练带来的训练时间减少情况.</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/12/22/2019-周报29/" data-id="ck4pbg5lz001ee8u7ssxckulz" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/12/22/2019-周报29/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/12/22/2019-周报29/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报28" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/12/07/2019-周报28/">2019-周报28</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/12/07/2019-周报28/">
+            <time datetime="2019-12-07T05:42:33.000Z" itemprop="datePublished">2019-12-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="1-low-level-图像处理"><a href="#1-low-level-图像处理" class="headerlink" title="1. low level 图像处理"></a>1. low level 图像处理</h2><p>通过查阅近三年的论文，low level的图像处理可以分为以下几个方向，每个方向的处理方法都可以分为CNN和GAN两种，在low level图像处理中没有发现新的方向</p>
+<ul>
+<li>超分</li>
+<li>去噪</li>
+<li>去运动模糊</li>
+<li>去雾去雨 （不知道算不算low level）</li>
+<li>高质量图像修复</li>
+</ul>
+<p>另外，19年CVPR还发现一篇去水的论文<a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Akkaynak_Sea-Thru_A_Method_for_Removing_Water_From_Underwater_Images_CVPR_2019_paper.html" target="_blank" rel="noopener">A Method for Removing Water From Underwater Images</a> </p>
+<h2 id="2-2K到4K超分数据集制作"><a href="#2-2K到4K超分数据集制作" class="headerlink" title="2. 2K到4K超分数据集制作"></a>2. 2K到4K超分数据集制作</h2><h4 id="2-1-尺寸对超分的影响"><a href="#2-1-尺寸对超分的影响" class="headerlink" title="2.1 尺寸对超分的影响"></a>2.1 尺寸对超分的影响</h4><p>目前大多超分数据集都是通过bicubic下采样得到低清输入，此类方法对于数据集图片分辨率不敏感。比如，用1080p bicubic下采样到540p的数据集训练的模型用来放大480p分辨率的图片也是没有问题的，主要可以通过两点来论证此结论：</p>
 <ol>
-<li>超分部分使用更强的WDSR替代之后，psnr相比之前提高0.3-0.5db</li>
-<li>去噪部分使用DnCNN替代之后没有明显差别</li>
+<li>训练模型数据都是经过裁剪的预处理，比如裁剪为64x64，41x41….，超分过程对输入图片的尺寸不敏感</li>
+<li>超分的标准测试集如set5，set14，city100，Manga109都没有统一测试图片分辨率</li>
 </ol>
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p>[1]. <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1460-2466.1992.tb00812.x" target="_blank" rel="noopener">Defining  virtual reality : Dimensions determining telepresence</a></p>
-<p>[2]. <a href="http://faculty.cse.tamu.edu/jchai/CPSC641/iccv2003.pdf" target="_blank" rel="noopener">Recognising panoramas</a></p>
-<p>[3]. <a href="http://phenix.it-sudparis.eu/jvet/doc_end_user/current_document.php?id=4840" target="_blank" rel="noopener">Common Test Conditions 360 (JVET-L1012)</a></p>
-<p>[4]. <a href="https://mpeg.chiariglione.org/standards/exploration/future-video-coding/n16892-subjective-testing-method-360%C2%B0-video-projection" target="_blank" rel="noopener">N16892, Subjective testing method for 360° Video projection formats using HEVC</a></p>
-<p>[5]. <a href="https://mpeg.chiariglione.org/standards/exploration/future-video-coding/n16702-common-test-conditions-and-evaluation-procedures" target="_blank" rel="noopener">N16702 Common Test Conditions and Evaluation Procedures for 360 Video Coding</a></p>
-<p>[6]. <a href="https://jvet.hhi.fraunhofer.de/svn/svn_360Lib/" target="_blank" rel="noopener">360Lib</a></p>
-<p>[7]. <a href="https://blog.csdn.net/fan2273/article/details/77836660" target="_blank" rel="noopener">JVET专家组下360Lib全景视频投影格式测试平台</a></p>
-<p>[8]. <a href="https://blog.csdn.net/lin453701006/article/details/76919188" target="_blank" rel="noopener">360Lib中的坐标系</a></p>
-<p>[9]. <a href="https://ieeexplore.ieee.org/abstract/document/8076869/" target="_blank" rel="noopener">Scalable video coding based on user’s view for real-time virtual reality applications</a></p>
-<p>[10]. <a href="https://link.springer.com/chapter/10.1007/978-3-319-77383-4_75" target="_blank" rel="noopener">Scalable Video Coding Based on the User’s View for Real-Time Virtual Reality Applications</a></p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/07/19/2019-周报16/" data-id="cjysgcf3400108su7iw5bjdiz" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/07/19/2019-周报16/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/07/19/2019-周报16/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报15" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/05/29/2019-周报15/">2019-周报15</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/05/29/2019-周报15/">
-            <time datetime="2019-05-29T15:41:15.000Z" itemprop="datePublished">2019-05-29</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>这周对训练好的网络的输出进行测试，在测试的过程中不断发现了新的问题，在对问题进行分析，补充试验，观察结果之后成功找到了问题的原因。</p>
-<p>以下是整个过程中发现的问题，解决思路，以及试验结果，结果分析。</p>
-<h2 id="问题一："><a href="#问题一：" class="headerlink" title="问题一："></a>问题一：</h2><h4 id="问题描述：网络输出替换后EL码流升高"><a href="#问题描述：网络输出替换后EL码流升高" class="headerlink" title="问题描述：网络输出替换后EL码流升高"></a>问题描述：网络输出替换后EL码流升高</h4><p>本周测试最终编码结果时发现使用网络输出替换之后，EL层的码流不降反升（几乎升高了两倍）。进一步测试发现网络输出的图像不如直接使用SHM插值器放大效果好。训练网络的时候将网络的输出与bicubic的放大结果比较，确实获得了</p>
-<h4 id="问题分析：数据集的制作方式"><a href="#问题分析：数据集的制作方式" class="headerlink" title="问题分析：数据集的制作方式"></a>问题分析：数据集的制作方式</h4><p>按照常识来说用网络替换SHM插值器之后效果不可能不升反降。分析SHM测试中的数据特征知道，使用SHM提供的下采用工具 <code>TAppDownConvert.exe</code> 下采样得到的小图经SHM上采用效果好于经过 bicubic 上采样效果(<strong>记此特性为特性A</strong>) ，所以我们的训练集同样应该满足这样的特性。但经过测试发现训练的数据并不满足此特性，说明训练小图(41x41)到大图(82x82)之间的映射关系与最终测试basketball数据的小图(540x960) 到大图(1080x1960)之间的映射关系不同。</p>
-<p>训练使用数据的制作方式及测试结果如下图所示，可知下采样之后的的图片满足特性A，但在裁剪成小图的过程中会使其不满足特性A。</p>
-<p><img src="/2019/05/29/2019-周报15/week15-data_1.png" alt="图1.数据制作方式1"></p>
-<h4 id="解决方式：重做数据集"><a href="#解决方式：重做数据集" class="headerlink" title="解决方式：重做数据集"></a>解决方式：重做数据集</h4><p>分析可知上面数据制作过程中的切图过程毁坏了图片的特性，于是想到在裁剪得<code>Sr_label</code> 后再进行下采样与重建，修改之后的数据制作过程如下图</p>
-<p><img src="/2019/05/29/2019-周报15/week15-data_2.png" alt="图1.数据制作方式2"></p>
-<p>由于新的数据制作方式重建部分是对 <code>Lr_label</code> 进行编解码，而 41x41 尺寸的图片不能编码，会有以下错误提示，所以将输入尺寸改为了 42x42 与 84x84。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">yuv  [info]: 41x41 fps 30000/1000 i420p8 frames 0 - 0 of 1</span><br><span class="line">raw  [info]: output file: t25.h265</span><br><span class="line">x265 [info]: HEVC encoder version 2.6+14-f09f3b4a2115</span><br><span class="line">x265 [info]: build info [Windows][MSVC 1900][64 bit][noasm] 8bit</span><br><span class="line">x265 [info]: using cpu capabilities: none!</span><br><span class="line">x265 [error]: Picture width must be an integer multiple of the specified chroma subsampling</span><br><span class="line">x265 [error]: Picture height must be an integer multiple of the specified chroma subsampling</span><br><span class="line">x265 [error]: failed to open encoder</span><br></pre></td></tr></table></figure>
-<h4 id="试验结果："><a href="#试验结果：" class="headerlink" title="试验结果："></a>试验结果：</h4><p>使用重新制作的数据集进行训练，训练和测试的结果都超过了SHM放大的效果。如下图所示，<strong>红框圈中的三个psnr分别是网络放大结果，bicubic放大结果，SHM插值器放大结果</strong>。可以看出SHM插值器效果好于bicubic，网络效果好于SHM插值器。测试集的图片尺寸和训练集相同，小图42x42，大图 84x84 。</p>
-<p><img src="/2019/05/29/2019-周报15/week15-testResult.png" alt="图三.测试结果"></p>
-<p>本以为试验到这儿就顺利结束了，但是在测试编码用的<code>BasketballDrive_960x540_500.yuv</code>视频时结果却很糟糕，结果如下图 (<strong>红框圈中的三个psnr分别是网络放大结果，bicubic放大结果，SHM插值器放大结果</strong>)。</p>
-<p><img src="/2019/05/29/2019-周报15/week15-testBasketball.png" alt="图4.篮球视频测试结果"></p>
-<p>以上试验结果表明，网络对42x42放大到84x84效果很好，但是不能泛化到大图。使用网络将 960x540图片 放大到 1920x1080 时效果极差。</p>
-<h2 id="问题二："><a href="#问题二：" class="headerlink" title="问题二："></a>问题二：</h2><h4 id="问题描述：网络不能泛化到大图"><a href="#问题描述：网络不能泛化到大图" class="headerlink" title="问题描述：网络不能泛化到大图"></a>问题描述：网络不能泛化到大图</h4><p>问题一试验结果显示使用 42x42 与 84x84的数据训练与测试结果都很好，但是放大 960x540的图片到1920x1080时效果极差。</p>
-<h4 id="问题分析1：感受野导致"><a href="#问题分析1：感受野导致" class="headerlink" title="问题分析1：感受野导致"></a>问题分析1：感受野导致</h4><p>小图到大图效果差别显著，与师兄讨论之后可能是由于感受野导致的问题，所以想着改变网络感受野观察试验结果。</p>
-<h4 id="解决方案-1-1：减小网络层数"><a href="#解决方案-1-1：减小网络层数" class="headerlink" title="解决方案 1.1：减小网络层数"></a>解决方案 1.1：减小网络层数</h4><p>通过减小网络层数缩小感受野，缩小每个像素点的参考范围。由于这个方案试验起来最简单，所以首先试验了此方案。</p>
-<h4 id="试验结果-1-1"><a href="#试验结果-1-1" class="headerlink" title="试验结果 1.1"></a>试验结果 1.1</h4><p>减小网络层数之后，结果同问题一几乎相同，小图的训练集与测试集效果都很好，但是测试大图时效果极差。</p>
-<h4 id="解决方案-1-2-：调大训练集图片尺寸"><a href="#解决方案-1-2-：调大训练集图片尺寸" class="headerlink" title="解决方案 1.2 ：调大训练集图片尺寸"></a>解决方案 1.2 ：调大训练集图片尺寸</h4><p>试验1.1失败之后，继续从训练集部分寻找原因，重新制作训练集，将图片尺寸从之前的 <code>42x42</code> 与 <code>84x84</code> 扩大到了<code>96x96</code> 与 <code>192x192</code> 。</p>
-<h4 id="试验结果-1-2"><a href="#试验结果-1-2" class="headerlink" title="试验结果 1.2"></a>试验结果 1.2</h4><p>结果与上面相同，大图结果极差</p>
-<h4 id="问题分析2"><a href="#问题分析2" class="headerlink" title="问题分析2"></a>问题分析2</h4><p>经过上面一系列试验失败之后开始重新思考整个问题。根据已有知识，既然是超分网络就不可能存在小图与大图之间有如此显著的差别。</p>
-<p>之前的解决方案都是针对网络后半部分的超分网络进行改进，有没有可能是网络前半部分 (去噪部分) 导致的问题？于是将中间部分的输出保存下来，观察处理之后的效果，结果如下 (<strong>左边为原图，右边为去噪部分输出</strong> )</p>
-<p><img src="/2019/05/29/2019-周报15/week15-basketballDnoise.png" alt="图5.去噪结果对比"></p>
-<p>大图去噪之后图片发生了肉眼明显可见的变化 (训练与测试集的小图均没有这种问题，去噪之后psnr均提高0.2–0.6 ) 。</p>
-<h4 id="解决方案-2-1"><a href="#解决方案-2-1" class="headerlink" title="解决方案 2.1"></a>解决方案 2.1</h4><p>问题分析二部分表明，大图泛化差的问题主要是前面去噪部分导致。首先想到的解决方法就是除去去噪部分，做一个存粹的超分网络。</p>
-<h4 id="试验结果-2-1"><a href="#试验结果-2-1" class="headerlink" title="试验结果 2.1"></a>试验结果 2.1</h4><p>在原网络中去除中间标签，训练网络。发现在没有中间标签的情况下网络的参数朝着完全不同的方向演变，最后训练结果，原去噪部分的输出与小图毫无关系。</p>
-<p>使用原网络情况下去除中间标签，网络的收敛速度变慢，由于急于看最终结果，所以改了一下EDSR直接做超分训练。最终小图大图结果都正常，且相比SHM结果有 2db 左右的增益 (qp21 – qp25 )。下图是<code>basketball</code>视频的测试结果 (<strong>红框圈中的三个psnr分别是网络放大结果，bicubic放大结果，SHM插值器放大结果</strong>)。</p>
-<p><img src="/2019/05/29/2019-周报15/week15-testBasketball_edsr.png" alt="图6.edsr测试结果"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>照理来说，去噪网络也是能够泛化到大图的，可能是在放大与超分混合之后导致这部分出现了问题，这部分试验比简单，单独做个去噪网络查看泛化到大图的结果就行了。</p>
-<p>目前整个试验的结果都没有问题，剩下的就是补全剩下的试验。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/05/29/2019-周报15/" data-id="cjysgcf30000s8su7anupdtes" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/05/29/2019-周报15/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/05/29/2019-周报15/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报14" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/05/22/2019-周报14/">2019-周报14</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/05/22/2019-周报14/">
-            <time datetime="2019-05-22T05:47:40.000Z" itemprop="datePublished">2019-05-22</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>我们论文中使用的网络仅对YUV图像的Y通道进行放大，所以测试性能的时候需要得到SHM中原插值器放大后的重构参考图像，将其中Y通道的值替换为我们网络的输出，UV通道不变，使用替换后的YUV数据作为参考层编码EL层，并进行对比。SHM工程中并没有将此插值器编译为可执行文件给我们使用，所以需要学习SHM工程，更改其中插值器部分源码进行试验。好在有蒋昊师兄之前的工作参考，节省了很多时间。</p>
-<p>本周完成了测试数据的准备，清楚了测试的整个流程，剩下的工作预计能在接下来的一周完成。</p>
-<h3 id="SHM源码学习"><a href="#SHM源码学习" class="headerlink" title="SHM源码学习"></a>SHM源码学习</h3><p>测试使用的SHM版本为 12.0，开发环境为Visual Studio 2012。SHM是在HM的基础上进行扩展得到，整个工程包含十个项目，我们主要使用其中的<strong>TAppEncoder</strong>进行试验，所以重点阅读了此部分代码。</p>
-<p>打开<strong>TAppEncoder</strong>项目的encmain.cpp文件，首先能够看到的是三个重要的类，<strong>TAppEncTop</strong>, <strong>TAppEncCfg</strong>, <strong>TAppEncLayerCfg</strong>。 其关系如UML图所示，TAppEncTop为最顶层类，所有编码功能均能由此类完成，其继承了TAppEncCfg类，该类用于解析输入的配置文件。TAppEncLayerCfg为以上两类的友元类，TAppEncCfg将配置文件的解析结果存入此类</p>
-<p><img src="/2019/05/22/2019-周报14/week14-uml-Enc.png" alt="图1.UML-Enc"></p>
-<p>在参数解析完毕后调用TAppEncTop中的encode()函数开始编码，这也是整个工程的核心。进入该编码函数，在进行了一系列初始化之后进入了 compressGOP() 函数，随后再是compressSlice()，对每一个LCU进行编码，每编完一个LCU进行一次更新，LCU的大小根据图片的信息的复杂度不同而不同。</p>
-<p>而我们测试需要更改的是TComPrediction::upsampleBasicPic()部分，此部分对BL层进行放大作为增强层的预测信息。</p>
-<h3 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h3><p>数据处理部分主要包括以下几个部分</p>
-<ul>
-<li>基础层重构数据(BL reconstructed image)获取</li>
-<li>基础层重构数据Y通道提取输入超分网络放大</li>
-<li>使用SHM插值器得到放大后的YUV数据</li>
-<li>将通过网络放大的Y通道数据与通过自带插值器放大的UV数据结合</li>
-<li>将组合之后的数据作为EL层参考数据，编码EL层</li>
-</ul>
-<p>目前完成了数据处理的前三部分</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/05/22/2019-周报14/" data-id="cjysgcf3600128su7qehizcvd" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/05/22/2019-周报14/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/05/22/2019-周报14/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报13" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/05/17/2019-周报13/">2019-周报13</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/05/17/2019-周报13/">
-            <time datetime="2019-05-17T14:09:25.000Z" itemprop="datePublished">2019-05-17</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>本周试验结果显示，网络去噪部分加入BN层之后，以5个QP为一组进行训练，去噪部分<strong>psnr</strong>有<strong>0.2–0.3db</strong>的提升，超分部分<strong>psnr</strong>有<strong>0.8–1.2db</strong>的提升（与bicubic放大对比）。目前已经完成了<strong>QP21–QP25</strong>, <strong>QP26–QP30</strong>两组数据的训练，剩下的两组正在等待训练。分析试验结果，仅超分部分的增益而言，与目前的经典超分网络相比显得不足（优酷超分比赛中使用<strong>EDSR</strong>进行四倍放大有<strong>4db</strong>左右的提升），我们使用的网络结构相对简单，应该还有提升空间。</p>
-<p>由于网络训练集的改变，论文中的数据都需要重新测试，现在正在熟悉SHM通过参考BL层对EL层编码的过程。如果网络结构不更改的话剩下的就是大量的测试工作。以下是试验的具体结果</p>
-<h3 id="SHVC"><a href="#SHVC" class="headerlink" title="SHVC"></a>SHVC</h3><p>下图为使用QP26–QP30训练集进行训练的截图，训练到这个时候增益便已经稳定，通过调低学习率增益也没有明显的增长。可以看出，去噪部分的增益稳定在 0.2–0.3db，超分部分增益稳定在0.8–1.2db。泛化效果很好，测试集结果和训练集几乎相同。</p>
-<p><img src="/2019/05/17/2019-周报13/week13-train_QP36_compare.png" alt="图1.训练前后对比"></p>
-<h3 id="YOUKU"><a href="#YOUKU" class="headerlink" title="YOUKU"></a>YOUKU</h3><p>直接使用EDSR的结构进行四倍放大，最后psnr稳定在38附近，使用bicubic放大psnr大概在32附近。</p>
-<p><img src="/2019/05/17/2019-周报13/week13-train_youku.png" alt="图2.优酷训练结果"></p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>现在论文上的主要任务是使用我们的网络代替SHM中的<strong>Interpolator</strong>进行对比，补全对比部分的数据</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/05/17/2019-周报13/" data-id="cjysgcf31000v8su7nr12luh7" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/05/17/2019-周报13/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/05/17/2019-周报13/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报12" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/05/10/2019-周报12/">2019-周报12</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/05/10/2019-周报12/">
-            <time datetime="2019-05-10T02:50:56.000Z" itemprop="datePublished">2019-05-10</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>本周针对 SHVC 论文中QP问题进行了试验，实验中将QP分为四组，分别为21-25，26-30，31-35，36-40。以下是相关细节和目前为止的训练结果。除此之外和吴畅一块儿参加了天池优酷的超分比赛。</p>
-<h2 id="1-数据集介绍"><a href="#1-数据集介绍" class="headerlink" title="1 数据集介绍"></a>1 数据集介绍</h2><p>根据网络结构，我们的每组数据由一个输入和两个标签组成，分别记为 <code>input_lr</code> <code>label_lr</code> <code>label_sr</code> 。其中 <code>label_sr</code>为高分辨原图，大小为82x82。 <code>label_lr</code> 为高分辨图通过bicubic下采样得到的低分辨图，大小为41x41。 <code>input_lr</code> 为低分辨图通过不同qp编码解码之后得到的噪声图。每五个QP为一组制作一个数据集，每个取96000张图，一组共480000张图。图片均通过BSDS500数据集裁剪增强得到。</p>
-<h2 id="2-网络结构"><a href="#2-网络结构" class="headerlink" title="2 网络结构"></a>2 网络结构</h2><p>训练使用的是师兄之前设计的网络结构，由去噪和超分两部分组成。去噪部分由9层卷积层组成，深度为64，卷积核为3x3，激活函数均使用ReLU。超分部分由14层卷积层组成，深度为64，卷积核为3x3，激活函数均使用ReLU。去噪与超分均使用全局残差。</p>
-<h2 id="3-结果分析"><a href="#3-结果分析" class="headerlink" title="3 结果分析"></a>3 结果分析</h2><p>实验结果表明将数据集由之前的单个QP改为现在五个QP混合的情况下，依然使用原网络并不能得到很好的效果。</p>
-<h4 id="3-1-混合训练"><a href="#3-1-混合训练" class="headerlink" title="3.1 混合训练"></a>3.1 混合训练</h4><p>首先是将超分部分与去噪部分混合训练，各自权重均为0.5。</p>
-<h5 id="3-1-1-去噪部分"><a href="#3-1-1-去噪部分" class="headerlink" title="3.1.1 去噪部分"></a>3.1.1 去噪部分</h5><p>由于使用了全局残差，去噪部分在一个epoch不到便达到饱和，psnr不再上涨，psnr值变化情况如下</p>
-<p><img src="/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr.png" alt="图1.train_QP21_psnr_lr"></p>
-<p>但是同原始输入图片数据对比易知，去噪部分并没有发挥出相应的作用。如下图红色框内所示，括号外面为去噪网络输出与标签图片之间的psnr值，括号内部为输入的噪声图片与标签之间的psnr值（下图使用数据集QP范围为21-25，所以带噪声图片psnr就已经很高）。结果表明去噪之后的图片psnr值并没有得到提升。</p>
-<p><img src="/2019/05/10/2019-周报12/week12-train_QP21_psnr_lr_compare.png" alt="图2.train_QP21_psnr_lr_compare"></p>
-<h5 id="3-1-2-超分部分"><a href="#3-1-2-超分部分" class="headerlink" title="3.1.2 超分部分"></a>3.1.2 超分部分</h5><p>超分部分一直训练不上去，下图为<strong>QP 36-40</strong>之间时超分的psnr变化曲线。在现有的结构下改变网络的深度依然不能解决此问题。</p>
-<p><img src="/2019/05/10/2019-周报12/week12-train_QP36_psnr_sr.png" alt="图3.train_QP36_psnr_sr"></p>
-<h4 id="3-2-单独训练"><a href="#3-2-单独训练" class="headerlink" title="3.2 单独训练"></a>3.2 单独训练</h4><p>单独训练即超分部分loss的反向传播不影响到去噪部分的网络参数，结果与混合训练差别不大</p>
-<h5 id="3-2-1-去噪部分"><a href="#3-2-1-去噪部分" class="headerlink" title="3.2.1 去噪部分"></a>3.2.1 去噪部分</h5><p>单独训练时去噪部分收敛速度快于混合训练，收敛结果无明显差别</p>
-<h5 id="3-2-2-超分部分"><a href="#3-2-2-超分部分" class="headerlink" title="3.2.2 超分部分"></a>3.2.2 超分部分</h5><p>超分部分与混合训练无明显差别</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>训练过程中对网络进行修改激活函数，修改网络参数大小，修改学习率，修改超分网络与去噪网络的权重等操作，结果并没有得到明显的改善。</p>
-<p>暂时计划尝试一下其他网络结构，将去噪与超分部分单独训练，两部分均有不错效果的情况下再进行组合实验。</p>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/05/10/2019-周报12/" data-id="cjysgcf2y000q8su730dqq65l" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/05/10/2019-周报12/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/05/10/2019-周报12/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报11" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/04/27/2019-周报11/">2019-周报11</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/04/27/2019-周报11/">
-            <time datetime="2019-04-27T10:51:27.000Z" itemprop="datePublished">2019-04-27</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>本周学习了VAE-GAN, B    iGAN等理论知识，针对之前说的利用GAN做unpaired的网络，阅读了论文<strong>Unsupervised Image Super-Resolution using Cycle-in-Cycle Generative Adversarial Networks</strong> 并进行了实现，由于实验室显卡使用紧张，训练了10个epoch，得到了不错的效果。同时，在FlyAI上报名了比赛，在事情较少的时候开始做做比赛，检验水平。</p>
-<h1 id="1-CinCGAN"><a href="#1-CinCGAN" class="headerlink" title="1 CinCGAN"></a>1 CinCGAN</h1><p><strong>CinCGAN</strong>将去噪网络与超分网络结合，去噪部分使用cycleGAN的结构，将去噪后的结果输入训练之后的<strong>EDSR</strong> 超分网络得到超分图像，再通过一个生成网络生成低分辨带噪声图像与最初输入图像之间计算损失。整个网络结构相当于一个大的cycleGAN中再加入一个cycleGAN，所以起名为CinCGAN(cycle in cycle GAN)，网络共有三个Generator，两个Discriminator，一个EDSR，整体网络结构如下。</p>
-<p><img src="/2019/04/27/2019-周报11/week11-CinCGAN.png" alt="图1.CinCGAN"></p>
-<p>网络使用<strong>NTIRE2018 Super-Resolution Challenge</strong> 比赛提供的高清数据集DIV2K进行训练，其中包含800张训练图片和100张测试图片。其中低清图片直接使用 <strong>bicubic</strong> 下采用得到，噪声图片在下采样基础上加噪得到。并通过旋转，裁剪来扩张数据。</p>
-<h3 id="1-1-网络结构"><a href="#1-1-网络结构" class="headerlink" title="1.1 网络结构"></a>1.1 网络结构</h3><p>上面提到网络共有三个Generator，两个Discriminator，一个EDSR。其中生成器与判别器的网络结构各自相同，如下图所示。</p>
-<p><img src="/2019/04/27/2019-周报11/week11-DGstructure.png" alt="图2.生成器&amp;判别器结构"></p>
-<h3 id="1-2-训练过程"><a href="#1-2-训练过程" class="headerlink" title="1.2 训练过程"></a>1.2 训练过程</h3><p>网络的训练主要分为两个部分单独训练，也即是网络中的两个cycleGAN。首先训练网络中的<strong>LR -&gt; clean LR</strong> 去噪网络，在去噪网络训练完成之后再训练整个大的超分网络。</p>
-<ul>
-<li>STEP1 (内部去噪网络)：<ol>
-<li>从bicubic下采样训练集中取样m个(一个batch)样本作为real样本</li>
-<li>从加噪训练集中取样m个样本，输入G1得到输出作为fake样本</li>
-<li>使用real样本，fake样本更新判别器D1</li>
-<li>G1网络输出张量输入判别器D1计算log损失函数 $LogLoss$</li>
-<li>G1网络输入加噪图片，计算去噪之后的 $TVLoss$</li>
-<li>G1网络输入bicubic下采样图片，计算输入前后的$L1loss$</li>
-<li>计算G2网络的输出与G1网络输入之间的 $MSEloss$</li>
-<li>总损失$ Loss = LogLoss + 0.5<em>TVLoss + 5</em> L1loss + 10*MSEloss$</li>
-<li>更新生成器 G1 G2</li>
-</ol>
-</li>
-<li>STEP2 (超分网络)：<ol>
-<li>STEP1更新</li>
-<li>从训练集中采样高清图m个作为real样本</li>
-<li>EDSR输出作为fake样本</li>
-<li>更新D2</li>
-<li>EDSR网络输出张量输入判别器D2计算log损失函数 $LogLoss$</li>
-<li>对EDSR网络输出张量计算 $TVLoss$</li>
-<li>计算EDSR网络的输出与高清图片之间的 $MSELoss1 $</li>
-<li>计算G3网络输出与G1网络输入之间的 $MSELoss2 $</li>
-<li>总损失 $ Loss = LogLoss + 2<em>TVLoss + 5</em> L1loss + 10*MSEloss$</li>
-<li>更新生成器 G1 G2 G3</li>
-</ol>
-</li>
-</ul>
-<h3 id="1-3-参考资料"><a href="#1-3-参考资料" class="headerlink" title="1.3 参考资料"></a>1.3 参考资料</h3><ul>
-<li><a href="https://arxiv.org/pdf/1809.00437v1.pdf" target="_blank" rel="noopener">Unsupervised Image Super-Resolution using Cycle-in-Cycle Generative Adversarial Networks</a></li>
-<li><a href="https://github.com/Junshk/CinCGAN-pytorch" target="_blank" rel="noopener">CinCGAN-pytorch</a></li>
-</ul>
-<h1 id="2-图像去锯齿"><a href="#2-图像去锯齿" class="headerlink" title="2 图像去锯齿"></a>2 图像去锯齿</h1><p>研究生阶段多数时间在学习深度学习的图像处理，传统的图像处理很少用过，看到这个小测试就很有兴趣。查阅书籍之后决定使用简单方法进行实现，实现步骤大概为以下三个步骤</p>
-<ul>
-<li>有锯齿区域提取 (ROI)</li>
-<li>对锯齿区域模糊处理</li>
-<li>对锯齿区域锐化</li>
-</ul>
-<h5 id="1-锯齿区域提取"><a href="#1-锯齿区域提取" class="headerlink" title="1. 锯齿区域提取"></a>1. 锯齿区域提取</h5><p><img src="/2019/04/27/2019-周报11/week11-AntiAliasing1.png" alt="图2.区域提取"></p>
-<p>如上图所示，锯齿区域提取主要包括灰度提取，边缘提取，边缘筛选，膨胀扩大边缘区域四个部分。在测试过<strong>sobel</strong> 边缘提取，<strong>prewitt </strong>边缘提取，<strong>Laplasian of Gaussian</strong> 边缘提取，<strong>canny </strong>边缘提取之后，根据结果选择了<strong>canny</strong> 算子进行边缘提取。</p>
-<h5 id="2-滤波锐化"><a href="#2-滤波锐化" class="headerlink" title="2.滤波锐化"></a>2.滤波锐化</h5><p>对上面提取的区域进行掩膜滤波，使用高斯模糊再进行<strong>sobel</strong> 锐化得到处理前后的对比图如下</p>
-<p><img src="/2019/04/27/2019-周报11/week11-AntiAliasing6.png" alt="图3.结果对比"></p>
-<p>附处理代码如下：</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">I_ori = imread(<span class="string">'4.png'</span>);     <span class="comment">% 读取图片</span></span><br><span class="line">I = I_ori(:,:,<span class="number">2</span>);</span><br><span class="line">imshow(I,[]);</span><br><span class="line"><span class="comment">%I = imbinarize(I);</span></span><br><span class="line"></span><br><span class="line">cannyBW=edge(I,<span class="string">'canny'</span>);      <span class="comment">% 边缘提取</span></span><br><span class="line">figure;</span><br><span class="line">imshow(cannyBW);</span><br><span class="line">title(<span class="string">'canny Edge'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">% Test</span></span><br><span class="line">p = regionprops(cannyBW, <span class="string">'Perimeter'</span>, <span class="string">'PixelIdxList'</span>);</span><br><span class="line"><span class="comment">%[test, longest] = max([p.Perimeter]);</span></span><br><span class="line">[~,Index] = sort([p.Perimeter],<span class="string">'descend'</span>);</span><br><span class="line"><span class="comment">%[~, longest] = max([p.Perimeter]);</span></span><br><span class="line">BW2 = <span class="built_in">zeros</span>(<span class="built_in">size</span>(cannyBW));</span><br><span class="line">SortLongestG = SortLongest(<span class="number">1</span>:<span class="number">20</span>);</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="number">10</span></span><br><span class="line">    <span class="comment">%j = int8(i);</span></span><br><span class="line">    <span class="built_in">j</span> = Index(<span class="built_in">i</span>);</span><br><span class="line">    PixelIdxList = p(<span class="built_in">j</span>).PixelIdxList;</span><br><span class="line">    BW2(PixelIdxList) = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">figure;</span><br><span class="line">imshow(BW2)</span><br><span class="line"></span><br><span class="line"><span class="comment">% logBW_dilate = imdilate(logBW, [1 1 1;1 1 1;1 1 1]);         % 提取 ROI </span></span><br><span class="line">logBW_dilate = imdilate(BW2, [<span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span>;<span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span>;<span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span>;<span class="number">0</span> <span class="number">1</span> <span class="number">1</span> <span class="number">1</span> <span class="number">0</span>;<span class="number">0</span> <span class="number">0</span> <span class="number">1</span> <span class="number">0</span> <span class="number">0</span>]);</span><br><span class="line"><span class="comment">% logBW_dilate = imdilate(logBW, [1 1 1 1 1;1 1 1 1 1;1 1 1 1 1;1 1 1 1 1;1 1 1 1 1]);</span></span><br><span class="line"><span class="comment">% logBW_dilate = imdilate(logBW, [1 1 1 1 1;1 1 1 1 1;1 1 1 1 1]);</span></span><br><span class="line"><span class="comment">% logBW_dilate = imdilate(logBW, [1 1 1 1;1 1 1 1;1 1 1 1]);</span></span><br><span class="line"><span class="comment">% logBW_dilate = imdilate(logBW, [1 1;1 1;1 1;1 1;1 1;1 1]);</span></span><br><span class="line">figure;</span><br><span class="line">imshow(logBW_dilate);</span><br><span class="line">title(<span class="string">'dilate of Laplasian of canny Edge'</span>);</span><br><span class="line"></span><br><span class="line">G = fspecial(<span class="string">'gaussian'</span>, [<span class="number">5</span> <span class="number">5</span>], <span class="number">2</span>);        <span class="comment">% ROI 区域进行高斯模糊</span></span><br><span class="line">blurI = I_ori;</span><br><span class="line">blurI(:,:,<span class="number">1</span>) = roifilt2(G,I_ori(:,:,<span class="number">1</span>),logBW_dilate);</span><br><span class="line">blurI(:,:,<span class="number">2</span>) = roifilt2(G,I_ori(:,:,<span class="number">2</span>),logBW_dilate);</span><br><span class="line">blurI(:,:,<span class="number">3</span>) = roifilt2(G,I_ori(:,:,<span class="number">3</span>),logBW_dilate);</span><br><span class="line">figure;</span><br><span class="line">imshow(blurI);</span><br><span class="line">title(<span class="string">'gaussian blur on roi'</span>);</span><br><span class="line"></span><br><span class="line">imwrite(blurI, <span class="string">'5_out.png'</span>);</span><br><span class="line"></span><br><span class="line">S = fspecial(<span class="string">'sobel'</span>);          <span class="comment">% ROI 区域进行 sobel 锐化</span></span><br><span class="line">sobelI = blurI;</span><br><span class="line">sobelI(:,:,<span class="number">1</span>) = roifilt2(S, blurI(:,:,<span class="number">1</span>), logBW_dilate);</span><br><span class="line">sobelI(:,:,<span class="number">2</span>) = roifilt2(S, blurI(:,:,<span class="number">2</span>), logBW_dilate);</span><br><span class="line">sobelI(:,:,<span class="number">3</span>) = roifilt2(S, blurI(:,:,<span class="number">3</span>), logBW_dilate);</span><br><span class="line">sobelI = uint8(sobelI) + uint8(blurI);</span><br><span class="line">title(<span class="string">'sobel sharpen on roi of blurI'</span>);</span><br></pre></td></tr></table></figure>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/04/27/2019-周报11/" data-id="cjysgcf2v000l8su763537ges" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/04/27/2019-周报11/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/04/27/2019-周报11/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报10" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/04/12/2019-周报10/">2019-周报10</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/04/12/2019-周报10/">
-            <time datetime="2019-04-12T13:41:11.000Z" itemprop="datePublished">2019-04-12</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>本周继续学习了CycleGAN，重点学习并总结了深度学习中常用的各种卷积之间的区别与联系。调试修复了视频编解码中的部分bug，完成了双路同步编解码的功能。</p>
-<h1 id="1-视频编解码项目现状说明"><a href="#1-视频编解码项目现状说明" class="headerlink" title="1 视频编解码项目现状说明"></a>1 视频编解码项目现状说明</h1><p>测试发现，现在编码解码部分虽然都使用GPU完成，但是中间拼接部分却是在CPU中进行的，整个过程的内存使用情况如下</p>
-<p><img src="/2019/04/12/2019-周报10/week10-CodecMemoryV1.png" alt="图1.CodecMemoryV1.png"></p>
-<p>所以拼接部分目前实际是在内存中完成，针对此部分的改进方法目前有两种方案</p>
-<ul>
-<li>ffmpeg + CUDA</li>
-<li>ffmpeg + OpenCV</li>
-</ul>
-<p>使用opencv只能针对<strong>拼接部分</strong>进行改进，即将内存中的帧转移到显存使用GPU拼接，中间有<code>显存-&gt;内存-&gt;显存</code> 的转移过程。</p>
-<p>使用ffmpeg + CUDA或许能够完成整个解码，拼接，编码过程均在显卡中完成，目前还未实践。</p>
-<h1 id="2-深度学习常用卷积总结"><a href="#2-深度学习常用卷积总结" class="headerlink" title="2 深度学习常用卷积总结"></a>2 深度学习常用卷积总结</h1><p>深度学习在图像领域的操作主要依赖卷积操作，根据不同场景不同目的产生了各种不同的卷积方式。常用的二维卷积，三维卷积，转置卷积，增大感受野的扩张卷积，减小参数的可分卷积，模型并行的分组卷积，以及用于超分辨的亚像素卷积等等，选择不同的卷积对网络的性能，参数都会有很大的影响。</p>
-<h4 id="2-1-2DConv-3DConv"><a href="#2-1-2DConv-3DConv" class="headerlink" title="2.1 2DConv, 3DConv"></a>2.1 2DConv, 3DConv</h4><p>使用二维卷积时，卷积核的深度等于被卷积图像的深度，所以卷积时在深度方向不移动，最后卷积的结果为二维特征。而三维卷积时，卷积核的深度小于被卷积图像的深度，所以卷积时除了横向纵向移动之外还会在深度上移动，所以被称为三维卷积，卷积结果为三维特征，如下图所示</p>
-<p><img src="/2019/04/12/2019-周报10/week10-3DConv.png" alt=""></p>
-<h4 id="2-2-转置卷积"><a href="#2-2-转置卷积" class="headerlink" title="2.2 转置卷积"></a>2.2 转置卷积</h4><p>转置卷积可以当作上面卷积的逆操作，在卷积操作之前通过在周围补零的方式达到卷积之后的size大于卷积之前的size，通常用于上采样。</p>
-<p>当卷积核与其转置卷积相乘结果为单位矩阵时，卷积与转置卷积是完全互逆的，但不满足此条件时，卷积与转置卷积不是可逆的。</p>
-<h4 id="2-3-扩张卷积-dilated-convolutions"><a href="#2-3-扩张卷积-dilated-convolutions" class="headerlink" title="2.3 扩张卷积 (dilated convolutions)"></a>2.3 扩张卷积 (dilated convolutions)</h4><p>扩张卷积的主要优点是在不增加模型参数的情况下扩大感受野，参数 I(扩张率) 表示希望将核加宽的程度，通常是在核元素之间插入 I-1 个空格实现。当 I=0 时，和普通卷积一样。</p>
-<h4 id="2-4-可分卷积"><a href="#2-4-可分卷积" class="headerlink" title="2.4 可分卷积"></a>2.4 可分卷积</h4><p>深度学习中使用的可分卷积通常指深度可分卷积，谷歌提出的MobileNet中便是使用的这种卷积。深度可分卷积主要是在卷积的深度上进行了创新，通过单层卷积与 1x1 卷积将最开始的卷积操作拆成两步进行。</p>
-<p>先使用深度为 1 的卷积核进行卷积操作，于是卷积的输入输出拥有相同的深度，再使用 1x1 卷积扩大深度。通过这样的操作减小训练的参数。具体操作方法见参考资料。</p>
-<h4 id="2-5-分组卷积"><a href="#2-5-分组卷积" class="headerlink" title="2.5 分组卷积"></a>2.5 分组卷积</h4><p>分组卷积即将卷积操作分组进行，如将 255x255x16 数据分为两组 255x255x8 的数据各自进行卷积操作从而实现模型并行操作。模型并行不仅拥有数据并行的加速功能，因为能够将模型部署在不同GPU中，还能节省显存，从而能够增大训练的batch。分组卷积还能大大减小模型参数，分为 n 组，参数便能减小为原来的 $1/n$ </p>
-<p>初此之外，分组卷积甚至能改进模型，上面提到分组卷积能够减小模型参数，因此具有稀疏过滤器的功能，效果类似于dropout。</p>
-<h4 id="2-6-亚像素卷积"><a href="#2-6-亚像素卷积" class="headerlink" title="2.6 亚像素卷积"></a>2.6 亚像素卷积</h4><p>在做超分网络时，使用转置卷积上采样会造成棋盘效应，而亚像素卷积能很好地克服棋盘效应。其实现也很简单，就是将很深的低分辨率特征组装成高分辨图像，如下图所示。</p>
-<p><img src="/2019/04/12/2019-周报10/week10-subpixConv.png" alt="图3.subpixConv"></p>
-<h4 id="2-7-参考资料"><a href="#2-7-参考资料" class="headerlink" title="2.7 参考资料"></a>2.7 参考资料</h4><ul>
-<li><a href="https://towardsdatascience.com/a-comprehensive-introduction-to-different-types-of-convolutions-in-deep-learning-669281e58215" target="_blank" rel="noopener">A Comprehensive Introduction to Different Types of Convolutions in Deep Learning</a></li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/04/12/2019-周报10/" data-id="cjysgcf2q000d8su7lyiluvix" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/04/12/2019-周报10/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/04/12/2019-周报10/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报9" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/04/07/2019-周报9/">2019-周报9</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/04/07/2019-周报9/">
-            <time datetime="2019-04-07T03:01:34.000Z" itemprop="datePublished">2019-04-07</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>以往深度学习模型训练测试大多都是在别人的模型上稍微修改便拿来用，本周开始自己从头构建模型代码进行训练，注意到了很多之前没有注意的实现细节。本周的主要工作有以下两点</p>
-<ul>
-<li>阅读论文 <em><a href="https://arxiv.org/abs/1412.6572" target="_blank" rel="noopener">Explaining and harnessing adversarial examples</a></em> 学习了对抗样本的相关知识</li>
-<li>继续学习 GAN 的相关知识</li>
-</ul>
-<h1 id="1-对抗样本"><a href="#1-对抗样本" class="headerlink" title="1 对抗样本"></a>1 对抗样本</h1><p>对抗样本一直是机器学习中一个难题，刻意地在样本中加入特定扰动便能大大降低模型的识别准确率，如下图所示，便能使网络将熊猫识别为长臂猿。<img src="/2019/04/07/2019-周报9/week9-FGSM_panda.png" alt="图1.FGSM panda example"></p>
-<p>制造对抗样本的方法中最有名的方法之一便是上图中使用的 FGSA(fast gradient sign attack)。一直以来大家都知道对抗样本问题的存在，但是对于引起这种现象的原因却并不明了。现在业界对此的共识是<strong>输入特征维度过高和模型的线性性质导致</strong> 。只要找到特定的方向，图像的每个像素点都朝特定的方向前进一小步，就会导致整个图片的特征发生很大的改变从而跨过决策层。</p>
-<h3 id="1-1-对抗样本的防御"><a href="#1-1-对抗样本的防御" class="headerlink" title="1.1 对抗样本的防御"></a>1.1 对抗样本的防御</h3><p>目前对抗样本的生成远比防御更加容易，大多对抗样本的生成都是利用了其梯度信息。最容易想到的防御方法便是将生成的对抗样本一块儿加入训练集中进行训练，这种方法可以有效地防御样本攻击，但是只能针对用于训练的对抗样本有效，除此之外还有<strong>defensive distillation</strong> ，<strong>梯度隐藏</strong> 等方法。但相比攻击来说，防御并没有做得足够好。</p>
-<h3 id="1-2-总结"><a href="#1-2-总结" class="headerlink" title="1.2 总结"></a>1.2 总结</h3><p>对抗样本的出现对理解深度学习有很大的帮助，在很多领域深度学习识别率都大大超越了人类水平，但对抗样本的出现算是找到了深度学习的一处盲点，目前还没有很好的方法完全解决这一问题。</p>
-<h3 id="1-3-参考资料"><a href="#1-3-参考资料" class="headerlink" title="1.3 参考资料"></a>1.3 参考资料</h3><ul>
-<li><p><a href="https://pytorch.org/tutorials/beginner/fgsm_tutorial.html#fast-gradient-sign-attack" target="_blank" rel="noopener">ADVERSARIAL EXAMPLE GENERATION</a></p>
-</li>
-<li><p><a href="https://arxiv.org/abs/1412.6572" target="_blank" rel="noopener">Explaining and harnessing adversarial examples</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/nemoyy/article/details/81052301" target="_blank" rel="noopener">对抗样本：知其然，知其所以然</a></p>
-</li>
-</ul>
-<h1 id="2-GAN"><a href="#2-GAN" class="headerlink" title="2 GAN"></a>2 GAN</h1><h3 id="2-1-实践部分"><a href="#2-1-实践部分" class="headerlink" title="2.1 实践部分"></a>2.1 实践部分</h3><p>本周继续学习了GAN的相关知识，在参考了许多经典模型之后开始自己动手编写模型。在自己编写模型的过程中注意到了很多之前忽视的实现上的细节知识，加强了对深度学习框架的熟悉程度。</p>
-<p>自己实现模型需要关注的东西更多，从数据的读取，预处理，到网络的构建，优化器的选择，训练，测试的过程。比起在已有的代码中更改网络模型进行训练，手动实现整个过程有助于观察到更多的细节部分。之前已经跑过相应的代码，目前自己从头编写的代码仅实现了一部分，还未全部完成。</p>
-<h3 id="2-2-理论部分"><a href="#2-2-理论部分" class="headerlink" title="2.2 理论部分"></a>2.2 理论部分</h3><p>GAN的相关理论发展主要在对真实样本与生成样本之间分布的测量部分，Goodfellow最开始论文中使用的是 <strong>JS-divergence</strong> 来度量分布之间的距离。但这种距离的测量不是很容易，而且两个分布在没有任何交集的情况下距离都相同，也就是距离的远近不影响测量值，这样不利于训练。</p>
-<p>在这之后逐渐提出了很多种不同的度量方式，如 <a href="http://papers.nips.cc/paper/6066-f-gan-training-generative-neural-samplers-using-variational-divergence-minimization.pdf" target="_blank" rel="noopener">f-GAN</a>中便进行了推广，利提出了多种不同的测量方式如下<img src="/2019/04/07/2019-周报9/week9-Fdivergence.png" alt="图2.F-divergence"></p>
-<p>随后在<strong>W-GAN</strong>中又提出了新的测量方式 <strong>Earth Mover’s distance</strong> 更好得解决了两个分布无任何交集情况下得距离问题，其中的理论知识都挺复杂，一时半会很难搞懂。</p>
-<h3 id="2-3-参考资料"><a href="#2-3-参考资料" class="headerlink" title="2.3 参考资料"></a>2.3 参考资料</h3><ul>
-<li><p><a href="http://papers.nips.cc/paper/6066-f-gan-training-generative-neural-samplers-using-variational-divergence-minimization.pdf" target="_blank" rel="noopener">f-GAN</a></p>
-</li>
-<li><p><a href="https://arxiv.org/pdf/1701.07875.pdf" target="_blank" rel="noopener">Wasserstein GAN</a></p>
-</li>
-<li><p><a href="https://www.bilibili.com/video/av24011528/?p=1" target="_blank" rel="noopener">李宏毅对抗生成网络(GAN)国语教程(2018)</a></p>
-</li>
-</ul>
-
-        
-        </div>
-        <footer class="article-footer">
-            <div class="share-container">
-
-
-
-</div>
-
-    <a data-url="http://yoursite.com/2019/04/07/2019-周报9/" data-id="cjysgcf2t000i8su7l31ro4bh" class="article-share-link"><i class="fas fa-share"></i>Share</a>
-<script>
-    (function ($) {
-        // Prevent duplicate binding
-        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
-            __SHARE_BUTTON_BINDED__ = true;
-        } else {
-            return;
-        }
-        $('body').on('click', function() {
-            $('.article-share-box.on').removeClass('on');
-        }).on('click', '.article-share-link', function(e) {
-            e.stopPropagation();
-
-            var $this = $(this),
-                url = $this.attr('data-url'),
-                encodedUrl = encodeURIComponent(url),
-                id = 'article-share-box-' + $this.attr('data-id'),
-                offset = $this.offset(),
-                box;
-
-            if ($('#' + id).length) {
-                box = $('#' + id);
-
-                if (box.hasClass('on')){
-                    box.removeClass('on');
-                    return;
-                }
-            } else {
-                var html = [
-                    '<div id="' + id + '" class="article-share-box">',
-                        '<input class="article-share-input" value="' + url + '">',
-                        '<div class="article-share-links">',
-                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
-                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
-                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
-                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
-                        '</div>',
-                    '</div>'
-                ].join('');
-
-              box = $(html);
-
-              $('body').append(box);
-            }
-
-            $('.article-share-box.on').hide();
-
-            box.css({
-                top: offset.top + 25,
-                left: offset.left
-            }).addClass('on');
-
-        }).on('click', '.article-share-box', function (e) {
-            e.stopPropagation();
-        }).on('click', '.article-share-box-input', function () {
-            $(this).select();
-        }).on('click', '.article-share-box-link', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
-        });
-    })(jQuery);
-</script>
-
-            
-    
-        <a href="http://yoursite.com/2019/04/07/2019-周报9/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/04/07/2019-周报9/">Comments</a>
-    
-
-        </footer>
-    </div>
-    
-</article>
-
-
-
-    <article id="post-2019-周报8" class="article article-type-post" itemscope itemprop="blogPost">
-    <div class="article-inner">
-        
-        
-            <header class="article-header">
-                
-    
-        <h1 itemprop="name">
-            <a class="article-title" href="/2019/03/29/2019-周报8/">2019-周报8</a>
-        </h1>
-    
-
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/03/29/2019-周报8/">
-            <time datetime="2019-03-29T02:01:21.000Z" itemprop="datePublished">2019-03-29</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fas fa-tag"></i>
-        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
-    </div>
-
-                    </div>
-                
-            </header>
-        
-        
-        <div class="article-entry" itemprop="articleBody">
-        
-            
-            <p>本周主要工作如下：</p>
-<ul>
-<li>总结了深度学习中常用的损失函数</li>
-<li>学习了GAN, DCGAN, CGAN, cycleGAN等常用GAN网络</li>
-<li>翻译了pytorch官方文档中DCGAN的教程，训练生成人脸图像</li>
-<li>继续完善视频编解码代码，发现了新的bug，正在调试中</li>
-</ul>
-<h1 id="1-常用损失函数"><a href="#1-常用损失函数" class="headerlink" title="1 常用损失函数"></a>1 常用损失函数</h1><p>损失函数的作用是衡量实际输出与预计输出之间的差异，损失函数的设计是深度学习中十分重要的部分，不仅会影响到训练的速度，还会影响隐含层中数据的分布情况。目前仅仅是总结了部分常用损失函数的计算方法，其中涉及很多统计学最优化知识，对此仅仅是浅尝辄止，其中更多的原理还需要以后慢慢总结体会，以下仅简要记录其计算方法。</p>
-<h3 id="1-1-MSE"><a href="#1-1-MSE" class="headerlink" title="1.1 MSE"></a>1.1 MSE</h3><p>均方误差算是最简单也是最经典的一种计算损失的方法，其中 $\hat y$ 为实际输出，$y$ 为标签。<br>$$<br>mse_loss =\frac{1}{N} \sum _{i=1} ^N (y_i - \hat y_i)^2<br>$$</p>
-<h3 id="1-2-CrossEntropy"><a href="#1-2-CrossEntropy" class="headerlink" title="1.2 CrossEntropy"></a>1.2 CrossEntropy</h3><p>交叉熵是从KL散度中引出，用于衡量两个分布之间差异的大小，其值总是大于等于0，两个分布越相似其值越接近于0。训练时的标签可以当成一种分布，实际输出堪称另一种分布，常与softmax层结合用于分类模型。<br>$$<br>CrossEntropy_loss = -\sum _i y_i·log\hat y_i<br>$$</p>
-<h3 id="1-3-log损失函数"><a href="#1-3-log损失函数" class="headerlink" title="1.3 log损失函数"></a>1.3 log损失函数</h3><p>log损失通常用于逻辑回归，是二分类中常用的损失函数，若二分类中使用mse损失会造成最后优化函数为非凹函数，不利于训练。其中 $x$ 表示输出该特征，$y$ 表示所属类别， $p(1/x)$ 表示输入特征 $x$ 属于类别 $1$ 的概率。<br>$$<br>log_loss = \begin{cases}<br>-log(p(1/x)), &amp;&amp;&amp;y=1 \<br>-log(1-p(1/x)),&amp;&amp;&amp;y=0<br>\end{cases}<br>$$<br>将上面分类书写的形式变换一下，便得到了BCE_loss，只不过是换了一个名字而已，效果与上式相同<br>$$<br>BCE_loss = -y·log(p(y/x)) - (1-y)·log(1 - p(y/x))<br>$$<br>逻辑回归是分类网络中基础又重要的一个网络，GAN网络中的discriminator便是使用这种二分类网络。比较GAN网络的损失函数便会发现相似之处<br>$$<br> \mathop{min} \limits_G\mathop{max} \limits_ D V(G,D) = E_{x∼pdata(x)}[logD(x)]+E_{z∼pz(z)}[log(1−D(G(x)))]<br>$$</p>
-<h3 id="1-4-Smooth-L1"><a href="#1-4-Smooth-L1" class="headerlink" title="1.4 Smooth L1"></a>1.4 Smooth L1</h3><p>smooth L1是何凯明提出的优化的MSE损失，能有有效地优化梯度爆炸问题。这个例子表明我们可以根据我们网络的具体表现适当调节我们的损失函数从而解决特定的训练问题。<br>$$<br>smooth_l1_loss  = \begin{cases}<br>0.5(x_i - y_i)^2, &amp;&amp;&amp;\mbox{if }&amp;|x_i - y_i|&lt;1 \<br>|x_i - y_i| - 0.5,&amp;&amp;&amp;otherwise<br>\end{cases}<br>$$</p>
-<h3 id="1-5-F-divergence"><a href="#1-5-F-divergence" class="headerlink" title="1.5 F-divergence"></a>1.5 F-divergence</h3><p>F-divergence是一个大的类，其中 $F$ 表示特定的函数，当函数 $F$ 不同便表示的不同的散度，上面提到的交叉熵便是 KL散度即 KL-divergence。其中KL使用的 $F$ 为 $t·logt$ 。F-divergence损失函数如下：<br>$$<br>D_f (P_{data}||P_g) = \int_x P_g(x)f(\frac{P_{data}(x)}{P_g(x)})\, dx<br>$$<br>目前还有很多损失函数没有总结，比如用于人脸识别的<a href="https://pytorch.org/docs/stable/nn.html?highlight=loss#torch.nn.TripletMarginLoss" target="_blank" rel="noopener">TripletMarginLoss </a> 比起一般的损失函数能够很好地将不同的人脸特征分开。总之损失函数对深度学习的影响非常重要，很多时候使用一种损失导致训练崩坏而换一种损失便能得到不错的效果。</p>
-<h1 id="2-GAN"><a href="#2-GAN" class="headerlink" title="2 GAN"></a>2 GAN</h1><p>作为目前生成网络中的老大，GAN的发展十分迅猛而且应用场景很多，十分有趣。阅读了GAN的论文，翻译了 <a href="https://blog.csdn.net/weixin_36811328/article/details/88420820" target="_blank" rel="noopener">PyTorch教程之DCGAN</a> 并学习CGAN, CycleGAN等优秀的GAN模型。</p>
-<p>GAN网络解决了很多之前没能解决的问题，不光对生成网络贡献巨大，也为非监督学习领域带来了重大的突破。在此之前的生成模型领域有一个很难解决的问题便是如何对生成的图像做评估，而GAN使用 discriminator网络来对生成图片做评估很好地解决了这一问题。</p>
-<h3 id="2-1-DCGAN"><a href="#2-1-DCGAN" class="headerlink" title="2.1 DCGAN"></a>2.1 DCGAN</h3><p>DCGAN即deep convolution GAN第一次将GAN网络应用到图像处理领域。输入为服从高斯分布的随机噪声，输出目标图像，其主要的改进如下：</p>
+<p>综上，2K到4K超分数据集的制作采用传统的其它分辨率的数据集没有问题。</p>
+<h4 id="2-2-其它数据生成方式"><a href="#2-2-其它数据生成方式" class="headerlink" title="2.2 其它数据生成方式"></a>2.2 其它数据生成方式</h4><p>使用bicubic下采样制作的数据集存在很明显的缺点，在放大其它下采样方式导致的失真图片时增益会明显下降。在这个问题上，目前的解决方案主要有以下两种。</p>
 <ol>
-<li>取消了所有的pooling层，在判别器网络中使用strided convolutions层代替，在生成器中使用fractional-strided convolutions代替</li>
-<li>在生成器与判别器中都加入了 batchnorm 层</li>
-<li>移除了隐藏层中的全连接层</li>
-<li>生成器中所有隐含层中使用ReLU激活函数，输出层使用Tanh激活函数</li>
-<li>判别器中激活函数都使用 LeakyReLU </li>
+<li>使用更复杂的下采样方式代替bicubic下采样使其拥有更复杂的质量损失 [1, 3, 4, 5]。例如结合高斯下采样，泊松噪声，运动模糊等…….来制作数据集 [3]</li>
+<li>通过调节相机参数获取真实世界中的图像对 (realistic LR-HR image pairs) [2].</li>
 </ol>
-<p>DCGAN使得GAN网络在图像处理得到了良好的训练，但是其输入输出并没有建立良好的联系，而很多实际应用中需要将输入 $z$ 与输出图像之间建立联系，而非随机生成。例如输入文字，产生相应图像，输入语言，产生相应的图像，于是CGAN应运而生。</p>
-<h3 id="2-2-CGAN"><a href="#2-2-CGAN" class="headerlink" title="2.2 CGAN"></a>2.2 CGAN</h3><p>CGAN即 conditional GANs，在网络中引入了条件信息，使得GAN网络生成的图片能和输入之间联系起来。CGAN的应用场景十分广泛，图像修复，图像匹配………..。其最初的训练步骤如下</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cgan.png" alt="图1.CGAN训练结构"></p>
-<p>但现在在此基础上有了更多新的结构产生，大多是对生成器与判别器进行改进而来。如上图所示通常来说只有一个判别器，目前新的结构通过引入更多的判别器，一个判断生成的图像是否realistic，另一个判断生成的图像是否match。引入的条件也越来越多，文字，语言，图像等都是常用的条件信息。</p>
-<h3 id="2-3-CycleGAN"><a href="#2-3-CycleGAN" class="headerlink" title="2.3 CycleGAN"></a>2.3 CycleGAN</h3><p>CycleGAN的这种环形结构并不新鲜，在之前的AutoEncoder中就有这种类似的结构，CycleGAN将这种环形结构与GAN相结合，更好地解决了对生成后图像的评价问题。</p>
-<p><img src="/2019/03/29/2019-周报8/week8-cycleGAN-structure.png" alt="图2.CycleGAN结构"></p>
-<p>CGAN的训练需要很多很多成对的数据，通常这是很难获取的，而CycleGAN则完全为非监督学习，不需要成对的数据 (unpaired image-to-image)。这使得更多的训练任务变得可能，特别是在风格转换领域得到了广泛的应用。 </p>
-<p>近几年GAN的发展十分迅速，其相关的理论研究也在不断完善。除了通过结构对网络进行优化，还有很多在距离的度量方式上的重大突破，例如 LS-GAN, EB-GAN, WGAN, FisherGAN 等很多网络。这方面的理论知识相对更加复杂。</p>
-<h3 id="2-4-参考资料"><a href="#2-4-参考资料" class="headerlink" title="2.4 参考资料"></a>2.4 参考资料</h3><ul>
-<li><a href="http://openaccess.thecvf.com/content_ICCV_2017/papers/Zhu_Unpaired_Image-To-Image_Translation_ICCV_2017_paper.pdf" target="_blank" rel="noopener">Unpaired Image-To-Image Translation Using Cycle-Consistent Adversarial Networks</a></li>
-<li><a href="https://papers.nips.cc/paper/5423-generative-adversarial-nets.pdf" target="_blank" rel="noopener">Generative Adversarial Nets</a></li>
-<li><a href="http://openaccess.thecvf.com/content_cvpr_2017/papers/Isola_Image-To-Image_Translation_With_CVPR_2017_paper.pdf" target="_blank" rel="noopener">Image-to-Image Translation with Conditional Adversarial Networks</a></li>
-<li><a href="https://arxiv.org/pdf/1511.06434.pdf" target="_blank" rel="noopener">Unsupervised Representation Learning With Deep Convolutional Generative Adversarial Networks</a></li>
-<li><a href="https://www.bilibili.com/video/av24011528/?p=1" target="_blank" rel="noopener">李宏毅对抗生成网络(GAN)国语教程(2018)</a></li>
-</ul>
+<p>就实际工业应用来说，针对具体应用场景做适配性的超分数据集效果可能更好。</p>
+<h2 id="3-网络设计"><a href="#3-网络设计" class="headerlink" title="3 网络设计"></a>3 网络设计</h2><p>网络设计目前按照以下步骤进行</p>
+<ol>
+<li>设计一个简易，易扩展，易于进行参数量控制的基础模型作为BaseModle</li>
+<li>在BaseModule的基础上，拓展attention结构观察实验效果</li>
+<li>再逐步拓展新功能观察结果……..</li>
+</ol>
+<p>目前还在第一步进行大量试验，目标是试验出整体效果能超越CVPR投稿论文上的结构作为BaseModle。参数量在 <strong>20k–200k</strong> 之间adaptive。</p>
+<h2 id="Conference"><a href="#Conference" class="headerlink" title="Conference"></a>Conference</h2><ol>
+<li>Gu, Jinjin, et al. “Blind super-resolution with iterative kernel correction.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Chen, Chang, et al. “Camera Lens Super-Resolution.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Radu Timofte, Shuhang Gu, Jiqing Wu, and Luc Van Gool. Ntire 2018 challenge on single image super-resolution: Methods and results. In CVPR Workshop, 2018.</li>
+<li>Zhang, Kai, Wangmeng Zuo, and Lei Zhang. “Deep Plug-and-Play Super-Resolution for Arbitrary Blur Kernels.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Zhang, Kai, Wangmeng Zuo, and Lei Zhang. “Learning a single convolutional super-resolution network for multiple degradations.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2018.</li>
+</ol>
 
         
         </div>
@@ -1501,7 +453,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/29/2019-周报8/" data-id="cjysgcf2w000n8su7hr8xazsq" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/12/07/2019-周报28/" data-id="ck4pbg5m1001ie8u7aam0f5vb" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1569,7 +521,7 @@
 
             
     
-        <a href="http://yoursite.com/2019/03/29/2019-周报8/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/29/2019-周报8/">Comments</a>
+        <a href="http://yoursite.com/2019/12/07/2019-周报28/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/12/07/2019-周报28/">Comments</a>
     
 
         </footer>
@@ -1579,7 +531,7 @@
 
 
 
-    <article id="post-2019-周报7" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2019-周报27" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -1587,7 +539,7 @@
                 
     
         <h1 itemprop="name">
-            <a class="article-title" href="/2019/03/22/2019-周报7/">2019-周报7</a>
+            <a class="article-title" href="/2019/11/27/2019-周报27/">2019-周报27</a>
         </h1>
     
 
@@ -1596,8 +548,8 @@
                         
     <div class="article-date">
         <i class="fas fa-calendar-alt"></i>
-        <a href="/2019/03/22/2019-周报7/">
-            <time datetime="2019-03-22T03:25:54.000Z" itemprop="datePublished">2019-03-22</time>
+        <a href="/2019/11/27/2019-周报27/">
+            <time datetime="2019-11-27T09:58:24.000Z" itemprop="datePublished">2019-11-27</time>
         </a>
     </div>
 
@@ -1617,31 +569,18 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>本周解决了之前编码丢帧的问题。将原来测试中的单路解码根据项目需求改为双路解码，但由于ffmpeg的解码方式，可能造成两路解码帧的不同步，便会造成后续拼接部分的错位。总体来说大的主框架已经完成，但还有很多细节的部分需要调试。目前拼接使用的上下分割的拼接方式，隔行拼接计算量更大，且 UV 数据的处理还未找到解决方法。</p>
-<p>除此之外阅读了 Geoffrey Hinton 关于模型简化的论文 <a href="http://arxiv.org/pdf/1503.02531" target="_blank" rel="noopener">Distilling the knowledge in a neural network</a> ，论文中使用复杂模型来训练简单模型，使简单模型具有复杂模型的性能，从而达到简化模型结构的目的。</p>
-<h1 id="1-视频编解码"><a href="#1-视频编解码" class="headerlink" title="1 视频编解码"></a>1 视频编解码</h1><p>上次实验之所以有丢帧的现象是因为没有没有清洗(flush the decoder/encoder) 编解码器。在解码的时候，将所有编码数据全部送到解码器之后，在结束前需要调用<code>avcodec_send_packet(dec_ctx, NULL)</code>往解码器输入 <code>NULL</code> 将解码器中剩余的帧”冲洗”出来，编码同理。</p>
-<h3 id="1-1-双路解码一路编码"><a href="#1-1-双路解码一路编码" class="headerlink" title="1.1 双路解码一路编码"></a>1.1 双路解码一路编码</h3><p>前面说到，<strong>ffmpeg</strong>使用以下四个函数进行编解码：</p>
+            <p>之前做CVPR时，为了赶速度，代码写得很乱，本周重构了相关代码，并且开始试验新的模型。之外学习了图模型的一些知识。</p>
+<h2 id="1-新模型探索"><a href="#1-新模型探索" class="headerlink" title="1 新模型探索"></a>1 新模型探索</h2><p>通过分析之前模型的设计与实验结果，主要打算在以下两个方面进行改进从而提高增益</p>
 <ul>
-<li><code>avcodec_send_frame</code></li>
-<li><code>avcodec_receive_packet</code></li>
-<li><code>avcodec_send_packet</code></li>
-<li><code>avcodec_receive_frame</code></li>
+<li>增加参考帧，并充分利用参考帧的信息</li>
+<li>增加网络参数，找到最适合的参数量与BD增益</li>
 </ul>
-<p>但是这几个函数的使用并不是很有规律地进行。比如<code>avcodec_send_packet</code>与<code>avcodec_receive_frame</code>配合使用完成解码功能。调试发现，两个函数并非严格地交替执行，执行情况根据具体的编码视频不同而不相同。所以在双路解码时不能仅仅通过对以上两个解码函数使用上的同步而达到对解码后帧的同步。实际操作中，通过对两路解码状态的监测实现双路解码的同步。</p>
-<h3 id="1-2-编解码工作计划"><a href="#1-2-编解码工作计划" class="headerlink" title="1.2 编解码工作计划"></a>1.2 编解码工作计划</h3><p>基本完成了<code>deepwater.exe inputA inputB output</code>形式的可执行程序的主要内容，内部调用NVIDIA的编解码器进行编解码操作。根据之前的测试结果，奇偶分割或者上下分割两种方式，在未加去隔行处理的情况下表现差异不大，且均达到肉眼不可分的清晰度。但是YUV420P格式在奇偶分割的处理中存在着 UV 分量不可分的情况。</p>
-<p>除了以上提到的内容，对项目进一步的工作安排还不是太清楚。</p>
-<h1 id="2-提炼模型"><a href="#2-提炼模型" class="headerlink" title="2 提炼模型"></a>2 提炼模型</h1><p>提高模型性能的一个简单方法便是训练多个不同的模型，然后使用多个模型识别的平均值作为最总结果，但是这样会导致预测模型过于笨重，且耗费过多的计算资源。本篇文章通过特殊的训练方法从笨重的模型中提炼信息到简单模型中，从而简化模型。</p>
-<h3 id="2-1-实现方法"><a href="#2-1-实现方法" class="headerlink" title="2.1 实现方法"></a>2.1 实现方法</h3><p>本篇文章中提到的训练方法其实比较简单。例如，当我们训练分类模型时使用的标签均为<strong>硬标签(hard targets)，即所属类别处为1，其余为0</strong>。但我们实际训练模型的输出为该输入所属类别的概率(softmax)。</p>
-<p>$$<br>q_i = \frac{exp(z_i/T)}{\sum_jexp(z_j/T)}<br>$$</p>
-<p>而我们的标签(hard targets) 中却并没有体现出该图片像其它类别的概率，也就是说我们的硬标签中包含的信息不如softmax多。于是作者<strong>使用训练之后复杂模型的输出来作为图片的标签(soft targets) 来训练简单的模型</strong>。最后得出的结果表明，虽然大大简化了模型的结构，却可以得到接近复杂模型的正确率，如下图所示。</p>
-<p><img src="/2019/03/22/2019-周报7/week7-disstilled-accury.png" alt=""></p>
-<p>除此之外作者还针对不同的模型给出了多种训练方法，可通过调整上式子中的温度指数$T$ 来调节概率的分布情况。且使用不同的目标函数，不同的代价函数也均能使用这种方法来简化模型。使用软标签(soft targets)训练使得训练的速度更快，仅使用原训练数据 3% 的训练量即可达到</p>
-<p>接近原模型的测试正确率，具体指标如下图所示。</p>
-<p><img src="/2019/03/22/2019-周报7/week7-littledataset.png" alt=""></p>
-<h3 id="2-2-总结"><a href="#2-2-总结" class="headerlink" title="2.2 总结"></a>2.2 总结</h3><p>以上方法的核心便是通过对训练集标签的改进，将 hard targets 改进为 soft targets。使得标签能够提供更多的信息，从而可以达到简化模型的目的，在实际部署中非常有用。</p>
-<h3 id="2-3-参考文献"><a href="#2-3-参考文献" class="headerlink" title="2.3 参考文献"></a>2.3 参考文献</h3><ul>
-<li>Hinton, Geoffrey, Oriol Vinyals, and Jeff Dean. “Distilling the knowledge in a neural network.” arXiv preprint arXiv:1503.02531 (2015). <a href="http://arxiv.org/pdf/1503.02531" target="_blank" rel="noopener">pdf</a> (Godfather’s Work)</li>
-</ul>
+<h4 id="1-1-参考帧分析，3帧与7帧的选择"><a href="#1-1-参考帧分析，3帧与7帧的选择" class="headerlink" title="1.1 参考帧分析，3帧与7帧的选择"></a>1.1 参考帧分析，3帧与7帧的选择</h4><p>分析之前3帧与7帧的试验结果，表明3帧和7帧的增益基本相同。这和视频超分中的结果不一致，视频超分中7帧效果明显好于3帧。这个结果主要是我们的网络结构导致，相距较远的帧最后放入网络，感受野仅为7 pixel，而帧间偏移远大于7 pixel，导致较远帧不能提供有效信息。</p>
+<p>由于参数量一直是我们需要注意的问题，所以需要在不引入过多参数量的情况下解决这个问题。最后决定使用<strong>space-to-depth</strong>（如下图）无损下采样方法解决感受野问题，使用这个方法可以在不增加网络深度的情况下成倍扩大感受野，并且可以使用multi-scale的相关方法。</p>
+<p><img src="/2019/11/27/2019-周报27/week27-spance2depth.png" width="65%"></p>
+<h4 id="1-2-网络参数与BD增益的自适应探索"><a href="#1-2-网络参数与BD增益的自适应探索" class="headerlink" title="1.2 网络参数与BD增益的自适应探索"></a>1.2 网络参数与BD增益的自适应探索</h4><p>目前我们针对所有码流以及所有QP使用的网络结构都是完全固定的，CVPR论文中最后使用的网络,，网络参数占传统码流的比例在0.3%-10%之间浮动。对于其中占比低于5%的情况，有较大的优化空间，但对于占比10%上下的码流，增加网络参数会大大降低BD的增益情况，这个因素给网络的设计带来很大的困扰。</p>
+<p>要想解决这个困扰，只能增加网络结构的自适应调整功能，初步的观察结果表明，网络参数占传统码流的比例在<strong>8%-10%</strong>之间的表现较好。可以通过固定网络参数的占比这一要素，调整网络大小，实现网络的自适应功能，从而进一步提高BD增益。针对这一设想，设计一个便于调节模型大小的网络结构，通过一个变量（该变量可通过待拟合码流与固定的网络参数占比计算得到）调节网络结构。</p>
+<h2 id="2-图模型学习"><a href="#2-图模型学习" class="headerlink" title="2 图模型学习"></a>2 图模型学习</h2><p>第一次接触该领域，阅读文献时有很多没听过的专业名词，目前的理解是使用图的数据结构表示待处理数据，并设计处理此类数据结构的网络。理论部分不是很了解，学习了基础的图数据结构的构建，与常用的深度优先与广度优先的图遍历算法，初步了解了该领域常用的编程框架：<strong>pytorch-geometric</strong>, <strong>DGL</strong>, <strong>networkX</strong></p>
 
         
         </div>
@@ -1652,7 +591,7 @@
 
 </div>
 
-    <a data-url="http://yoursite.com/2019/03/22/2019-周报7/" data-id="cjysgcf2p000b8su7tek7k9xm" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+    <a data-url="http://yoursite.com/2019/11/27/2019-周报27/" data-id="ck4pbg5lx001ae8u75kzsd20e" class="article-share-link"><i class="fas fa-share"></i>Share</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1720,7 +659,1138 @@
 
             
     
-        <a href="http://yoursite.com/2019/03/22/2019-周报7/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/03/22/2019-周报7/">Comments</a>
+        <a href="http://yoursite.com/2019/11/27/2019-周报27/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/11/27/2019-周报27/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报26" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/10/20/2019-周报26/">2019-周报26</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/10/20/2019-周报26/">
+            <time datetime="2019-10-20T03:27:05.000Z" itemprop="datePublished">2019-10-20</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>基于深度学习的图像增强目前的创新点主要在网络结构上面，如 <strong>multi-scale</strong>, <strong>LSTM</strong>， <strong>Recursive</strong>， <strong>Recurrent</strong>,  其中很多创新是将序列模型中的东西用到了CNN中。在视频处理领域，由于其在空间维度上有图像处理的特性，在时间维度上有序列模型的特性，所以和序列模型的结合更为紧密。比如<strong>FRVSR</strong>[1]便是受RNN的启发，将前一序列的输出当作下一序列的输入，充分利用了视频的序列特性。</p>
+<p>本周主要学习了序列模型，序列模型的发展可以分为表示学习(Representation Learning)和模型创新。本周从整体上初步了解了以下三个方面的内容。</p>
+<ul>
+<li>序列模型 (sequence model)</li>
+<li>表示学习（Representation Learning）</li>
+<li>图神经网络（Graph Neural Network）</li>
+</ul>
+<p>其中表示学习和图神经网络都是刚刚接触，还没有深入了解。</p>
+<h2 id="1-序列模型"><a href="#1-序列模型" class="headerlink" title="1 序列模型"></a>1 序列模型</h2><p>序列模型的发展选取以下几个较为重要的思想进行记录，充分体现出了序列模型网络结构的发展情况，主要参考了吴恩达序列模型的课程[3]。</p>
+<ul>
+<li>GRU单元 (gate recurrent unit)</li>
+<li>LSTM单元 (long short term memory)</li>
+<li>Bidirectional RNN</li>
+<li>Deep RNN</li>
+<li>注意力机制</li>
+</ul>
+<p>####1.1 Standard RNN</p>
+<p>首先是标准RNN的结构如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-standard-rnn.png" alt="standard rnn"></p>
+<h4 id="1-2-GRU"><a href="#1-2-GRU" class="headerlink" title="1.2 GRU"></a>1.2 GRU</h4><p>GRU单元已经成为了序列模型的基本单元，可以看作简化版的LSTM模块，其提出主要是为了解决序列模型的长依赖关系以及梯度消失问题问题。其结构与前向传播公式如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-GRU.png" alt="GRU"></p>
+<h4 id="1-3-LSTM"><a href="#1-3-LSTM" class="headerlink" title="1.3 LSTM"></a>1.3 LSTM</h4><p>与GRU相比，LSTM将更新门独立成了<strong>遗忘门</strong>与<strong>输出门</strong>， 并进一步区分了<strong>细胞状态</strong>和<strong>隐藏状态</strong>。其结构与前向传播公式如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-LSTM.png" alt="LSTM"></p>
+<h4 id="1-4-B-RNN"><a href="#1-4-B-RNN" class="headerlink" title="1.4 B-RNN"></a>1.4 B-RNN</h4><p>bidirectional rnn主要是为了解决由上下文引起的语义歧义性，传统的RNN模型只能前向参考，而实际应用中后面的内容会引起语义的不同，例如 “He said, Teddy bears are on sale” 和 “He said, Teddy Roosevelt was a great President。其结构如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-B-RNN.png" alt="B-RNN"></p>
+<p>其每次反向传播必须在两个方向的前向传播都完成之后才能进行，虽然准确率有所提升，但训练速度会大大降低。</p>
+<h4 id="1-5-Deep-RNN"><a href="#1-5-Deep-RNN" class="headerlink" title="1.5 Deep RNN"></a>1.5 Deep RNN</h4><p>Deep RNN通过简单堆叠的方式提升模型的深度，从而获得更多的增益，其网络结构如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-deep-rnn.png" alt="Deep-RNN"></p>
+<h4 id="1-6-注意力机制"><a href="#1-6-注意力机制" class="headerlink" title="1.6 注意力机制"></a>1.6 注意力机制</h4><p>注意力机制最早来自2014年Bahdanau等人的研究 [6]，主要为了解决长句子BLEU得分衰减问题。其主要思想是序列中的某个位置对周围序列的参考权值是不一样的。通常来说，相距越远参考性应该越低。衰减曲线与网络结构如下</p>
+<p><img src="/2019/10/20/2019-周报26/week26-attention.png" alt="attention"></p>
+<h2 id="2-表示学习"><a href="#2-表示学习" class="headerlink" title="2 表示学习"></a>2 表示学习</h2><p>在神经网络出现之前，存在特征提取师这么一个行业，特侦提取这个过程便称作表示，不同的表示对后续的处理影响很大。比如阿拉伯数字和罗马数字就是对数字的两种不同表示，使用阿拉伯数字进行算数运算比使用罗马数字进行相同的运算简易很多，这就是表示不同带来的差异。下面主要介绍序列模型中的表示学习，并引出图像处理中的表示学习。</p>
+<p>序列模型中和表示学习相关的论文便是大名鼎鼎的word2vec [2] , 使用<strong>word Embedding</strong>方法代替了传统的<strong>one-hot</strong>编码，现在序列模型处理基本没有使用one-hot编码直接处理了。</p>
+<h4 id="2-1-word2vectore"><a href="#2-1-word2vectore" class="headerlink" title="2.1 word2vectore"></a>2.1 word2vectore</h4><p>使用<strong>one-hot</strong>编码，每个单词相互独立没有关联，任意两个单词之间的L2距离均为 $\sqrt{2}$ 而现实世界中不同单词之间存在不一样的关联性，word2vectore便是学习更贴近现实世界的表示。论文中给出了<strong>CBOW</strong>和<strong>Skip-gram</strong>两种实现方法，具体实现还没来得及仔细研究。</p>
+<h4 id="2-2-图像的表示"><a href="#2-2-图像的表示" class="headerlink" title="2.2 图像的表示"></a>2.2 图像的表示</h4><p>现在基于深度学习的图像处理很多都是end-to-end模式，直接将图像的表示和具体应用融合进行。end-to-end的方法训练与使用都很方便，但迁移效果并不理想，很多时候不如随机初始化的效果好。这也让人开始思考图像是否有更优的表示方法，图像表示的一个特殊应用便是人脸识别，使用<strong>Triplet</strong>损失学习人脸的表示。</p>
+<h2 id="3-图神经网络"><a href="#3-图神经网络" class="headerlink" title="3 图神经网络"></a>3 图神经网络</h2><p>图神经网络还没有深入了解，序列的表示以及有了很大的发展，然而由于图像的高维特性，其特征的表示发展缓慢，图神经网络的一大目标便是更好地学习<strong>图像的表示</strong>[7]。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>Sajjadi, M. S., Vemulapalli, R., &amp; Brown, M. (2018). Frame-recurrent video super-resolution. In <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em> (pp. 6626-6634).</li>
+<li>Mikolov, T., Chen, K., Corrado, G., &amp; Dean, J. (2013). Efficient estimation of word representations in vector space. <em>arXiv preprint arXiv:1301.3781</em>.</li>
+<li><a href="https://mooc.study.163.com/learn/2001280005?tid=2001391038&amp;_trace_c_p_k2_=3a0f96c3ecee40f88d3f16c136095988#/learn/announce" target="_blank" rel="noopener">网易云课堂-吴恩达-序列模型</a></li>
+<li>Hochreiter, S., &amp; Schmidhuber, J. (1997). Long short-term memory. <em>Neural computation</em>, <em>9</em>(8), 1735-1780.</li>
+<li><a href="https://www.cse.iitk.ac.in/users/sigml/lec/Slides/LSTM.pdf" target="_blank" rel="noopener">https://www.cse.iitk.ac.in/users/sigml/lec/Slides/LSTM.pdf</a></li>
+<li>Bahdanau, D., Cho, K., &amp; Bengio, Y. (2014). Neural machine translation by jointly learning to align and translate. <em>arXiv preprint arXiv:1409.0473</em>.</li>
+<li>Advancements in Graph Neural Networks Includes joint work with H. Ren, W. Hamilton, R. Ying, J. You,<br>M. Zitnik,W. Hu, K. Xu, S. Jegelka</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/10/20/2019-周报26/" data-id="ck4pbg5ly001ce8u7hymipxsh" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/10/20/2019-周报26/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/10/20/2019-周报26/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报25" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/10/07/2019-周报25/">2019-周报25-试验结果与分析</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/10/07/2019-周报25/">
+            <time datetime="2019-10-07T03:11:49.000Z" itemprop="datePublished">2019-10-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="试验结果记录与分析"><a href="#试验结果记录与分析" class="headerlink" title="试验结果记录与分析"></a>试验结果记录与分析</h1><h3 id="1-classB-单个epoch（50帧）运行时间"><a href="#1-classB-单个epoch（50帧）运行时间" class="headerlink" title="1. classB 单个epoch（50帧）运行时间"></a>1. classB 单个epoch（50帧）运行时间</h3><ul>
+<li>训练：21s</li>
+<li>测试：9s</li>
+</ul>
+<h3 id="2-x264结果"><a href="#2-x264结果" class="headerlink" title="2. x264结果"></a>2. x264结果</h3><p><img src="/2019/10/07/2019-周报25/week25-x264-result.png" alt="week25-x264-result"></p>
+<h3 id="3-ClassE结果"><a href="#3-ClassE结果" class="headerlink" title="3. ClassE结果"></a>3. ClassE结果</h3><p><img src="/2019/10/07/2019-周报25/week25-classE-HM.png" alt="week25-classE-HM"></p>
+<h3 id="4-分析总结"><a href="#4-分析总结" class="headerlink" title="4. 分析总结"></a>4. 分析总结</h3><p>分析目前为止的BD情况，差的基本都是低码率的码流，按常规理解来说，码流的大小和传输的信息量是相关的。我们之前拟合帧数是以50帧为基准，按原始码流的像素信息决定拟合的帧数。按照 <strong>learning-to-remember</strong> 的思路，网络记住的是信息，而非YUV数据占据的磁盘空间。现在正在初步试验根据码流确定拟合帧数的效果，相当于之前网络对不同码流都是拟合相同帧数，而现在加入了一个<strong><em>调度系统</em></strong> （熵调度？），根据实际码流确定拟合帧数。但是由于我们的试验涉及编码和网络训练，要确定一个好的调度方案需要很多时间，而我们现在没有足够的时间进行试验。</p>
+<h1 id="论文总结"><a href="#论文总结" class="headerlink" title="论文总结"></a>论文总结</h1><h3 id="BRCN-NIPS2015-amp-PAMI2018"><a href="#BRCN-NIPS2015-amp-PAMI2018" class="headerlink" title="BRCN (NIPS2015 &amp; PAMI2018)"></a>BRCN (NIPS2015 &amp; PAMI2018)</h3><blockquote>
+<p>Huang, Yan, Wei Wang, and Liang Wang. “Video super-resolution via bidirectional recurrent convolutional networks.” <em>IEEE transactions on pattern analysis and machine intelligence</em> 40.4 (2017): 1015-1028.</p>
+</blockquote>
+<blockquote>
+<p>Huang, Yan, Wei Wang, and Liang Wang. “Bidirectional recurrent convolutional networks for multi-frame super-resolution.” <em>Advances in Neural Information Processing Systems</em>. 2015.</p>
+</blockquote>
+<p>主要创新点在网络部分，相当于将RNN的结构使用了两次，一次从前往后，一次从后往前，最后重构的时候将两部分合并。</p>
+<p><img src="/2019/10/07/2019-周报25/week25-BRCN.png" alt="BRCN-NET-architecture"></p>
+<h3 id="FRVSR-CVPR2018"><a href="#FRVSR-CVPR2018" class="headerlink" title="FRVSR (CVPR2018)"></a>FRVSR (CVPR2018)</h3><blockquote>
+<p>Sajjadi, Mehdi SM, Raviteja Vemulapalli, and Matthew Brown. “Frame-recurrent video super-resolution.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2018.</p>
+</blockquote>
+<ul>
+<li>网络输入有三个：当前帧小图，前一帧小图，前一帧超分图。输出一个：当前帧超分图</li>
+<li>将网络的输出信息利用了起来，把前一帧的修复结果利用起来修复当前帧，节省了计算量</li>
+<li>在光流对齐部分新增了损失函数，用来增强对齐效果</li>
+<li>使用subpixel的反操作，将大图分成多张小图当作输入</li>
+<li>单帧超分中，5个残差块增益基本到顶，再增加残差块效果提升也不明显了。多帧超分，增加网络深度，超分效果提升明显</li>
+</ul>
+<p><img src="/2019/10/07/2019-周报25/week25-FRVSR-NET.png" alt="FRVSR-NET-ARCHI"></p>
+<p>文章细节给得很详细，循环利用网络的输出信息，在光流对齐处加损失函数的做法也是比较新颖的，利用subpixel的反操作（space-to-depth）将大图变为小图再输入的方法也是第一见到，很值得借鉴。</p>
+<h3 id="YOLO-CVPR2016"><a href="#YOLO-CVPR2016" class="headerlink" title="YOLO (CVPR2016)"></a>YOLO (CVPR2016)</h3><blockquote>
+<p>Redmon, Joseph, et al. “You only look once: Unified, real-time object detection.” <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>. 2016.</p>
+</blockquote>
+<ul>
+<li><p>滑动窗口卷积 （sliding window approach）</p>
+</li>
+<li><p>之前的目标识别都是多步骤进行，先生成候选框，再识别框内物体。YOLO一步完成候选框与识别任务</p>
+<blockquote>
+<p>Using our system, you only look once (YOLO) at an image to predict what objects are present and where they are.</p>
+</blockquote>
+</li>
+<li><p>一次完成对整张图片目标的框定与识别</p>
+</li>
+<li><p>在同样的速度下，识别准确率是其它模型的两倍</p>
+</li>
+</ul>
+<p>论文比较复杂，没有细看，后面有时间再仔细研究一下</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/10/07/2019-周报25/" data-id="ck4pbg5lw0016e8u77n3nmzri" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/10/07/2019-周报25/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/10/07/2019-周报25/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报24" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/09/29/2019-周报24/">2019-周报24</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/09/29/2019-周报24/">
+            <time datetime="2019-09-29T02:51:12.000Z" itemprop="datePublished">2019-09-29</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/09/29/2019-周报24/" data-id="ck4pbg5lu0012e8u7vnksokac" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/09/29/2019-周报24/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/09/29/2019-周报24/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报23" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/09/27/2019-周报23/">2019-周报23</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/09/27/2019-周报23/">
+            <time datetime="2019-09-27T06:08:25.000Z" itemprop="datePublished">2019-09-27</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周主要在64通道FRCNN的基础上试验了网络剪枝的效果，同时在之前的网络结构的基础上通过增加channel观察增益变化情况，具体试验结果如下。</p>
+<h3 id="1-增加channel试验"><a href="#1-增加channel试验" class="headerlink" title="1 增加channel试验"></a>1 增加channel试验</h3><p>以下试验结果均是BasketballDrive码流在RandomAccess编码模式下得到</p>
+<h5 id="1-1-BPRN试验结果"><a href="#1-1-BPRN试验结果" class="headerlink" title="1.1 BPRN试验结果"></a>1.1 BPRN试验结果</h5><table>
+<thead>
+<tr>
+<th></th>
+<th>QP 22 增益 (db)</th>
+<th>QP 37 增益 (db)</th>
+<th>参数 （个）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>channel 32</td>
+<td>0.1999</td>
+<td>0.5314</td>
+<td>14945</td>
+</tr>
+<tr>
+<td>channel 64</td>
+<td>0.2891</td>
+<td>0.6661</td>
+<td>48321</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-2-FRCNN试验结果"><a href="#1-2-FRCNN试验结果" class="headerlink" title="1.2 FRCNN试验结果"></a>1.2 FRCNN试验结果</h5><table>
+<thead>
+<tr>
+<th></th>
+<th>QP 22 增益 (db)</th>
+<th>QP 37 增益 (db)</th>
+<th>参数（个）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>channel 32</td>
+<td>0.2339</td>
+<td>0.4993</td>
+<td>19169</td>
+</tr>
+<tr>
+<td>channel 64</td>
+<td>0.2885</td>
+<td>0.7216</td>
+<td>75201</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-3-总结"><a href="#1-3-总结" class="headerlink" title="1.3 总结"></a>1.3 总结</h5><p>由试验结果可以看出channel由32增加到64增益有明显的提升，但算上参数量增加，BD稍有下降。同时，具体实现的过程中，学习率，图片裁剪大小等细节也会引起大约 ±0.05 的增益波动。</p>
+<h3 id="2-FRCNN剪枝"><a href="#2-FRCNN剪枝" class="headerlink" title="2 FRCNN剪枝"></a>2 FRCNN剪枝</h3><p>本周的主要工作是试验网络剪枝的情况，由于BPRN网络各卷积层之间交替连接，不能用市面上常用的减枝方法试验，所以最后选择了FRCNN进行剪枝试验。</p>
+<h5 id="2-1-剪枝简介"><a href="#2-1-剪枝简介" class="headerlink" title="2.1 剪枝简介"></a>2.1 剪枝简介</h5><p>FRCNN结构中，仅中间循环部分的<strong>两组卷积核</strong>可使用传统剪枝方法。剪枝过程中<strong>特征图</strong>与<strong>卷积核</strong>的变化情况可简单由下图表示（仅中间两层卷积变化情况）：</p>
+<p><img src="/2019/09/27/2019-周报23/week23-kernel-prune.png" alt="prune"></p>
+<p>由图可见，对卷积核1进行剪枝，会使其输出特征图通道数减小，下一个卷积核的对应的输入通道也需要剔除，在对复杂网络结构的剪枝中前后卷积的关联会导致剪枝涉及到的卷积核增加。</p>
+<h5 id="2-2-试验结果"><a href="#2-2-试验结果" class="headerlink" title="2.2 试验结果"></a>2.2 试验结果</h5><p>以下试验结果是在原始通道64的FRCNN基础上进行的剪枝，每次裁剪2个通道，每次剪枝后进行10个Epoch的微调。下表是试验的部分数据统计</p>
+<table>
+<thead>
+<tr>
+<th>层数</th>
+<th>64</th>
+<th>60</th>
+<th>56</th>
+<th>52</th>
+<th>48</th>
+<th>44</th>
+<th>40</th>
+<th>36</th>
+<th>32</th>
+<th>28</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数</td>
+<td>75201</td>
+<td>70593</td>
+<td>65985</td>
+<td>61377</td>
+<td>56769</td>
+<td>52161</td>
+<td>47553</td>
+<td>42945</td>
+<td>38337</td>
+<td>33729</td>
+</tr>
+<tr>
+<td>增益(db)</td>
+<td>0.721</td>
+<td>0.657</td>
+<td>0.620</td>
+<td>0.593</td>
+<td>0.561</td>
+<td>0.551</td>
+<td>0.523</td>
+<td>0.509</td>
+<td>0.477</td>
+<td>0.467</td>
+</tr>
+</tbody>
+</table>
+<p>由于每次剪枝之后仅进行了10个epoch的微调，所以每次剪枝之后并未达到完全的收敛。不过从总体趋势来看结果并不理想。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ul>
+<li><a href="https://github.com/jacobgil/pytorch-pruning" target="_blank" rel="noopener">pytorch-pruning</a></li>
+<li><a href="https://github.com/youzhonghui/gate-decorator-pruning" target="_blank" rel="noopener">gate-decorator</a></li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/09/27/2019-周报23/" data-id="ck4pbg5lv0014e8u7tn1lnsg6" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/09/27/2019-周报23/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/09/27/2019-周报23/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报21" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/09/07/2019-周报21/">2019-周报21</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/09/07/2019-周报21/">
+            <time datetime="2019-09-07T05:51:17.000Z" itemprop="datePublished">2019-09-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周主要针对新的数据制作方式进行训练，既有好的一面同时也遇到了新的问题。这里主要对本周的试验结果进行总结分析，并说明接下来计划的试验。</p>
+<h2 id="试验结果总结"><a href="#试验结果总结" class="headerlink" title="试验结果总结"></a>试验结果总结</h2><p>用DnCNN拟合新的数据得到了目前为止最高的增益如下表：</p>
+<table>
+<thead>
+<tr>
+<th>QP32 （1帧）</th>
+<th>QP32 （25帧）</th>
+<th>QP32 （50帧）</th>
+<th>QP27 （50帧）</th>
+<th>QP22 （50帧）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1db</td>
+<td>1.4db</td>
+<td>1.2db</td>
+<td>0.62db</td>
+<td>0.38db</td>
+</tr>
+</tbody>
+</table>
+<p>但试验发现使用新的数据很容易进入局部极小值而不收敛，这个问题的存在十分影响工作效率，同一网络由于初始化不同可能出现不同的收敛情况，很多时候训练了很久最后却不能够收敛，而得不到任何增益，白白浪费了很多时间。</p>
+<p>因为没有及时进行总结，在没解决进入局部极小值导致不收敛这个问题的情况下，又尝试了多种多帧拟合网络，其中包括直接输入多帧使用3D卷积融合的多帧网络，光流法融合的多帧网络，BPRN中的循环融合等。均没有取得较好的提升情况，并且不清楚是因为局部极小值导致的提升不够还是网络的原因。</p>
+<h2 id="后续试验计划"><a href="#后续试验计划" class="headerlink" title="后续试验计划"></a>后续试验计划</h2><p>之前的试验结果表明，使用41x41的数据集没有出现局部极小值的情况，且测试大图时没有出现增益衰减的情况。所以后续训练打算分两步进行，使用41x41初始训练避免进入局部极小值，换成大图加载保存点继续训练进一步提升增益。</p>
+<p>使用41x41的数据集测试不同网络的增益情况，尽量寻找参数量与增益性价比最高的网络。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/09/07/2019-周报21/" data-id="ck4pbg5lt0010e8u7huzv3u7i" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/09/07/2019-周报21/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/09/07/2019-周报21/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报20" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/09/01/2019-周报20/">2019-周报20</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/09/01/2019-周报20/">
+            <time datetime="2019-09-01T05:56:25.000Z" itemprop="datePublished">2019-09-01</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="1-当前情况分析"><a href="#1-当前情况分析" class="headerlink" title="1 当前情况分析"></a>1 当前情况分析</h1><p>观察以下两组数据分析当前 X265， VTM,  X265+FRCNN 三种编码方式的效果。</p>
+<p><img src="/2019/09/01/2019-周报20/D:/lilei\HEXO\source\_posts\week20-x265-vtm.png" alt="week20-x265-vtm"></p>
+<p><img src="/2019/09/01/2019-周报20/D:/lilei\HEXO\source\_posts\week20-x265-FRCNN.png" alt="week20-x265-FRCNN"></p>
+<p>分析得到以下情况：</p>
+<ol>
+<li>效果排名 VTM &gt; X265 + FRCNN &gt; X265</li>
+<li>PSNR (VTM) ≈ PSNR (X265 + FRCNN) + 0.2</li>
+<li>Bitrate (VTM) ≈ 0.77 * Bitrate (X265 + FRCNN) </li>
+</ol>
+<p>VTM在<strong>编码码率</strong>与<strong>编码效果</strong>两个方面都好于 X265+FRCNN， 我们编码方式的性质决定了码率必然是大于VTM，所以只能从<strong>提升PSNR</strong>的角度出发。通过计算得知，要使 X265+FRCNN 的效果赶上 VTM，需要在保持模型参数不变的情况下使<strong>PSNR在当前基础上再提升0.7</strong></p>
+<h1 id="2-思路与实践"><a href="#2-思路与实践" class="headerlink" title="2 思路与实践"></a>2 思路与实践</h1><p>要使psnr在目前的基础上提升0.7，根据之前做编码损伤修复的经验来看仅仅通过以前的方法几乎不可能实现。</p>
+<h3 id="2-1-思路"><a href="#2-1-思路" class="headerlink" title="2.1 思路"></a>2.1 思路</h3><p>和吴畅讨论之后有以下收获：</p>
+<h5 id="2-1-1-多帧融合"><a href="#2-1-1-多帧融合" class="headerlink" title="2.1.1 多帧融合"></a>2.1.1 多帧融合</h5><p>目前为止使用的网络都是处理单帧，没有做多帧融合网络，而视频编码会参考周围帧，所以可以从使用带多帧融合的网络试验观察效果。</p>
+<h5 id="2-1-2-过拟合"><a href="#2-1-2-过拟合" class="headerlink" title="2.1.2 过拟合"></a>2.1.2 过拟合</h5><p>当前的试验其实并不算真正的过拟合，可能是图片数据量太大和网络参数不够导致的。参考之前做过减小数据量的试验（如下表），仅拟合一帧的效果反而不好。<img src="/2019/09/01/2019-周报20/D:/lilei\HEXO\source\_posts\week20-different-frame.png" alt="week20-different-frame"></p>
+<p>但继续减小数据量，在仅拟合一帧 42x42 的图片时达到了完全的过拟合，无损地恢复出了标签数据</p>
+<p><img src="/2019/09/01/2019-周报20/D:/lilei\HEXO\source\_posts\week20-overfit.png" alt="week20-overfit"></p>
+<p>也就是说当前的网路结构与参数，仅能过拟合 42x42 的数据量，而现在50帧的1080x1920数据量太大做不到过拟合。</p>
+<h3 id="2-2-实践"><a href="#2-2-实践" class="headerlink" title="2.2 实践"></a>2.2 实践</h3><p>首先简单试验了多帧融合拟合，在参数量不增加的情况下做了一个简单的多帧网络进行训练。结果和单帧拟合相比并没有明显的提升</p>
+<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>分析以上结果发现由于图片的数据量太大，过拟合非常困难，而现在试验的提升都不算真正的过拟合，是具有一定的泛化能力的。</p>
+<p>所以当前的工作重点是想办法在保证网络参数的情况下尽量实现过拟合，考虑到视频编解码过程的帧间参考，之后的工作主要想办法做多帧融合的过拟合试验。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/09/01/2019-周报20/" data-id="ck4pbg5lr000we8u7e5opbbnf" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/09/01/2019-周报20/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/09/01/2019-周报20/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <article id="post-2019-周报19" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 itemprop="name">
+            <a class="article-title" href="/2019/08/14/2019-周报19/">2019-周报19</a>
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/08/14/2019-周报19/">
+            <time datetime="2019-08-14T01:56:57.000Z" itemprop="datePublished">2019-08-14</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>本周使用<strong>REDS</strong>的视频数据制作了视频图片通用的编解码去噪数据集。考虑到视频处理使用到更大的模型与更多的数据，学习了pytorch的并行机制。</p>
+<h1 id="1-去编解码噪声数据集"><a href="#1-去编解码噪声数据集" class="headerlink" title="1 去编解码噪声数据集"></a>1 去编解码噪声数据集</h1><p>之前图片超分数据集使用<strong>HDF5</strong>打包，这种方式虽然使用简单，但是不适用于数据量过大的场景，而现在一组QP的训练集达到40G的量级，所以采用了<strong>LMDB</strong>对数据打包，其优点是轻量化，读写快。</p>
+<p>在吸取了之前数据集制作的不足之处后，现在的数据集具备以下之前没有的特点：</p>
+<ul>
+<li>图片视频通用，没有预设网络输入的帧数，可弹性调整输入帧数而不用重做数据集</li>
+<li>没有进行预裁剪，可灵活更改决定输入的size，而不用重做数据集</li>
+</ul>
+<p>新的数据集具有较好的通用性</p>
+<h1 id="2-pytorch并行机制"><a href="#2-pytorch并行机制" class="headerlink" title="2 pytorch并行机制"></a>2 pytorch并行机制</h1><p>pytorch并行分为两种，分别是<strong>数据并行</strong>和<strong>模型并行</strong>。数据并行就是将一个batch的数据分为多组置于不同GPU种进行运算，最后将结果进行组合做反向传播，每个GPU需要存储整个模型。模型并行则是将模型的各部分存储于不同GPU进行训练。</p>
+<h3 id="2-1-数据并行"><a href="#2-1-数据并行" class="headerlink" title="2.1 数据并行"></a>2.1 数据并行</h3><p>数据并行适用于数据量较大的情况，每张GPU中都需要存储整个模型，所以存在一定的使用空间冗余。由于存在多张GPU之间的通信，必须等到每张GPU上的epoch都完成了才能进入下一个epoch，所以某些情况下多卡的速度可能比单卡更慢。</p>
+<h3 id="2-2-模型并行"><a href="#2-2-模型并行" class="headerlink" title="2.2 模型并行"></a>2.2 模型并行</h3><p>模型并行适用于模型过大的情况，相比数据并行实现上相对复杂一些。将模型分为多个模块存储于不同的GPU中，相比数据并行消除了模型存储的冗余。</p>
+<p>多GPU之间的同步是代码优化的主要工作，模型在各个GPU上每一次数据前向传播耗费的时间越接近越好，和木桶效应一样，运行的速度为最慢的GPU的速度，所以做模型拆分的时候需要了解各个拆分后模型的计算量以保证各个GPU上运行的时间接近。</p>
+<h1 id="3-参考资料"><a href="#3-参考资料" class="headerlink" title="3 参考资料"></a>3 参考资料</h1><ul>
+<li><a href="https://pytorch.org/" target="_blank" rel="noopener">https://pytorch.org/</a> For installation instructions</li>
+<li><a href="https://pytorch.org/tutorials/beginner/blitz/data_parallel_tutorial.html" target="_blank" rel="noopener">Optional: Data Parallelism</a> Single-Machine Data Parallel</li>
+<li><a href="https://pytorch.org/tutorials/intermediate/ddp_tutorial.html" target="_blank" rel="noopener">Getting Started with Distributed Data Parallel</a> Combine Distributed Data Parallel and Model Parallel</li>
+<li><a href="https://pytorch.org/tutorials/beginner/blitz/data_parallel_tutorial.html" target="_blank" rel="noopener">DATA PARALLELISM</a></li>
+<li><a href="https://pytorch.org/tutorials/beginner/former_torchies/parallelism_tutorial.html" target="_blank" rel="noopener">https://pytorch.org/tutorials/beginner/former_torchies/parallelism_tutorial.html</a></li>
+</ul>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/08/14/2019-周报19/" data-id="ck4pbg5lw0018e8u7qoau5z1i" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/08/14/2019-周报19/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/08/14/2019-周报19/">Comments</a>
     
 
         </footer>
@@ -1731,7 +1801,7 @@
 
 
     <nav id="page-nav">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
 </section>
             
@@ -1747,7 +1817,7 @@
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/07/19/2019-周报16/" class="thumbnail">
+                            <a href="/2019/12/22/2019-周报29/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1758,15 +1828,15 @@
                         
                         <div class="item-inner">
                             <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/07/19/2019-周报16/" class="title">2019-周报16</a></p>
-                            <p class="item-date"><time datetime="2019-07-19T06:23:12.000Z" itemprop="datePublished">2019-07-19</time></p>
+                            <p class="item-title"><a href="/2019/12/22/2019-周报29/" class="title">2019-周报29</a></p>
+                            <p class="item-date"><time datetime="2019-12-22T06:47:01.000Z" itemprop="datePublished">2019-12-22</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/05/29/2019-周报15/" class="thumbnail">
+                            <a href="/2019/12/07/2019-周报28/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1777,15 +1847,15 @@
                         
                         <div class="item-inner">
                             <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/05/29/2019-周报15/" class="title">2019-周报15</a></p>
-                            <p class="item-date"><time datetime="2019-05-29T15:41:15.000Z" itemprop="datePublished">2019-05-29</time></p>
+                            <p class="item-title"><a href="/2019/12/07/2019-周报28/" class="title">2019-周报28</a></p>
+                            <p class="item-date"><time datetime="2019-12-07T05:42:33.000Z" itemprop="datePublished">2019-12-07</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/05/22/2019-周报14/" class="thumbnail">
+                            <a href="/2019/11/27/2019-周报27/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1796,15 +1866,15 @@
                         
                         <div class="item-inner">
                             <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/05/22/2019-周报14/" class="title">2019-周报14</a></p>
-                            <p class="item-date"><time datetime="2019-05-22T05:47:40.000Z" itemprop="datePublished">2019-05-22</time></p>
+                            <p class="item-title"><a href="/2019/11/27/2019-周报27/" class="title">2019-周报27</a></p>
+                            <p class="item-date"><time datetime="2019-11-27T09:58:24.000Z" itemprop="datePublished">2019-11-27</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/05/17/2019-周报13/" class="thumbnail">
+                            <a href="/2019/10/20/2019-周报26/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1815,15 +1885,15 @@
                         
                         <div class="item-inner">
                             <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/05/17/2019-周报13/" class="title">2019-周报13</a></p>
-                            <p class="item-date"><time datetime="2019-05-17T14:09:25.000Z" itemprop="datePublished">2019-05-17</time></p>
+                            <p class="item-title"><a href="/2019/10/20/2019-周报26/" class="title">2019-周报26</a></p>
+                            <p class="item-date"><time datetime="2019-10-20T03:27:05.000Z" itemprop="datePublished">2019-10-20</time></p>
                         </div>
                     </li>
                 
                     <li>
                         
                         <div class="item-thumbnail">
-                            <a href="/2019/05/10/2019-周报12/" class="thumbnail">
+                            <a href="/2019/10/07/2019-周报25/" class="thumbnail">
     
     
         <span class="thumbnail-image thumbnail-none"></span>
@@ -1834,8 +1904,8 @@
                         
                         <div class="item-inner">
                             <p class="item-category"></p>
-                            <p class="item-title"><a href="/2019/05/10/2019-周报12/" class="title">2019-周报12</a></p>
-                            <p class="item-date"><time datetime="2019-05-10T02:50:56.000Z" itemprop="datePublished">2019-05-10</time></p>
+                            <p class="item-title"><a href="/2019/10/07/2019-周报25/" class="title">2019-周报25-试验结果与分析</a></p>
+                            <p class="item-date"><time datetime="2019-10-07T03:11:49.000Z" itemprop="datePublished">2019-10-07</time></p>
                         </div>
                     </li>
                 
@@ -1850,7 +1920,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">archives</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -1859,7 +1929,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">tags</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/weekly-report/">weekly-report</a><span class="tag-list-count">17</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/weekly-report/">weekly-report</a><span class="tag-list-count">26</span></li></ul>
         </div>
     </div>
 

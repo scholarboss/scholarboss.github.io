@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>2019-周报28 | lilei&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="1. low level 图像处理通过查阅近三年的论文，low level的图像处理可以分为以下几个方向，每个方向的处理方法都可以分为CNN和GAN两种，在low level图像处理中没有发现新的方向  超分 去噪 去运动模糊 去雾去雨 （不知道算不算low level） 高质量图像修复  另外，19年CVPR还发现一篇去水的论文A Method for Removing Water From U">
+<meta name="keywords" content="weekly-report">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2019-周报28">
+<meta property="og:url" content="http://yoursite.com/2019/12/07/2019-周报28/index.html">
+<meta property="og:site_name" content="lilei&#39;s blog">
+<meta property="og:description" content="1. low level 图像处理通过查阅近三年的论文，low level的图像处理可以分为以下几个方向，每个方向的处理方法都可以分为CNN和GAN两种，在low level图像处理中没有发现新的方向  超分 去噪 去运动模糊 去雾去雨 （不知道算不算low level） 高质量图像修复  另外，19年CVPR还发现一篇去水的论文A Method for Removing Water From U">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-12-15T12:58:36.247Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2019-周报28">
+<meta name="twitter:description" content="1. low level 图像处理通过查阅近三年的论文，low level的图像处理可以分为以下几个方向，每个方向的处理方法都可以分为CNN和GAN两种，在low level图像处理中没有发现新的方向  超分 去噪 去运动模糊 去雾去雨 （不知道算不算low level） 高质量图像修复  另外，19年CVPR还发现一篇去水的论文A Method for Removing Water From U">
+    
+
+    
+        <link rel="alternate" href="/" title="lilei&#39;s blog" type="application/atom+xml" />
+    
+
+    
+        <link rel="icon" href="/images/favicon.ico" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-brands.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-solid.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">lilei&#39;s blog</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/shanks.png" />
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fas fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/shanks.png" />
+            <h2 id="name">lilei</h2>
+            <h3 id="title">student &amp; manga lover</h3>
+            <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/scholar/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                29
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                1
+                <span>tag</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/scholar" target="_blank" title="github" class=tooltip>
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fab fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fab fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-2019-周报28" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            2019-周报28
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/12/07/2019-周报28/">
+            <time datetime="2019-12-07T05:42:33.000Z" itemprop="datePublished">2019-12-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="1-low-level-图像处理"><a href="#1-low-level-图像处理" class="headerlink" title="1. low level 图像处理"></a>1. low level 图像处理</h2><p>通过查阅近三年的论文，low level的图像处理可以分为以下几个方向，每个方向的处理方法都可以分为CNN和GAN两种，在low level图像处理中没有发现新的方向</p>
+<ul>
+<li>超分</li>
+<li>去噪</li>
+<li>去运动模糊</li>
+<li>去雾去雨 （不知道算不算low level）</li>
+<li>高质量图像修复</li>
+</ul>
+<p>另外，19年CVPR还发现一篇去水的论文<a href="http://openaccess.thecvf.com/content_CVPR_2019/html/Akkaynak_Sea-Thru_A_Method_for_Removing_Water_From_Underwater_Images_CVPR_2019_paper.html" target="_blank" rel="noopener">A Method for Removing Water From Underwater Images</a> </p>
+<h2 id="2-2K到4K超分数据集制作"><a href="#2-2K到4K超分数据集制作" class="headerlink" title="2. 2K到4K超分数据集制作"></a>2. 2K到4K超分数据集制作</h2><h4 id="2-1-尺寸对超分的影响"><a href="#2-1-尺寸对超分的影响" class="headerlink" title="2.1 尺寸对超分的影响"></a>2.1 尺寸对超分的影响</h4><p>目前大多超分数据集都是通过bicubic下采样得到低清输入，此类方法对于数据集图片分辨率不敏感。比如，用1080p bicubic下采样到540p的数据集训练的模型用来放大480p分辨率的图片也是没有问题的，主要可以通过两点来论证此结论：</p>
+<ol>
+<li>训练模型数据都是经过裁剪的预处理，比如裁剪为64x64，41x41….，超分过程对输入图片的尺寸不敏感</li>
+<li>超分的标准测试集如set5，set14，city100，Manga109都没有统一测试图片分辨率</li>
+</ol>
+<p>综上，2K到4K超分数据集的制作采用传统的其它分辨率的数据集没有问题。</p>
+<h4 id="2-2-其它数据生成方式"><a href="#2-2-其它数据生成方式" class="headerlink" title="2.2 其它数据生成方式"></a>2.2 其它数据生成方式</h4><p>使用bicubic下采样制作的数据集存在很明显的缺点，在放大其它下采样方式导致的失真图片时增益会明显下降。在这个问题上，目前的解决方案主要有以下两种。</p>
+<ol>
+<li>使用更复杂的下采样方式代替bicubic下采样使其拥有更复杂的质量损失 [1, 3, 4, 5]。例如结合高斯下采样，泊松噪声，运动模糊等…….来制作数据集 [3]</li>
+<li>通过调节相机参数获取真实世界中的图像对 (realistic LR-HR image pairs) [2].</li>
+</ol>
+<p>就实际工业应用来说，针对具体应用场景做适配性的超分数据集效果可能更好。</p>
+<h2 id="3-网络设计"><a href="#3-网络设计" class="headerlink" title="3 网络设计"></a>3 网络设计</h2><p>网络设计目前按照以下步骤进行</p>
+<ol>
+<li>设计一个简易，易扩展，易于进行参数量控制的基础模型作为BaseModle</li>
+<li>在BaseModule的基础上，拓展attention结构观察实验效果</li>
+<li>再逐步拓展新功能观察结果……..</li>
+</ol>
+<p>目前还在第一步进行大量试验，目标是试验出整体效果能超越CVPR投稿论文上的结构作为BaseModle。参数量在 <strong>20k–200k</strong> 之间adaptive。</p>
+<h2 id="Conference"><a href="#Conference" class="headerlink" title="Conference"></a>Conference</h2><ol>
+<li>Gu, Jinjin, et al. “Blind super-resolution with iterative kernel correction.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Chen, Chang, et al. “Camera Lens Super-Resolution.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Radu Timofte, Shuhang Gu, Jiqing Wu, and Luc Van Gool. Ntire 2018 challenge on single image super-resolution: Methods and results. In CVPR Workshop, 2018.</li>
+<li>Zhang, Kai, Wangmeng Zuo, and Lei Zhang. “Deep Plug-and-Play Super-Resolution for Arbitrary Blur Kernels.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2019.</li>
+<li>Zhang, Kai, Wangmeng Zuo, and Lei Zhang. “Learning a single convolutional super-resolution network for multiple degradations.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2018.</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/12/07/2019-周报28/" data-id="ck4pbg5m1001ie8u7aam0f5vb" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/12/07/2019-周报28/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/12/07/2019-周报28/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/12/22/2019-周报29/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    2019-周报29
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/11/27/2019-周报27/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">2019-周报27</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/12/22/2019-周报29/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/12/22/2019-周报29/" class="title">2019-周报29</a></p>
+                            <p class="item-date"><time datetime="2019-12-22T06:47:01.000Z" itemprop="datePublished">2019-12-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/12/07/2019-周报28/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/12/07/2019-周报28/" class="title">2019-周报28</a></p>
+                            <p class="item-date"><time datetime="2019-12-07T05:42:33.000Z" itemprop="datePublished">2019-12-07</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/11/27/2019-周报27/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/11/27/2019-周报27/" class="title">2019-周报27</a></p>
+                            <p class="item-date"><time datetime="2019-11-27T09:58:24.000Z" itemprop="datePublished">2019-11-27</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/10/20/2019-周报26/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/10/20/2019-周报26/" class="title">2019-周报26</a></p>
+                            <p class="item-date"><time datetime="2019-10-20T03:27:05.000Z" itemprop="datePublished">2019-10-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/10/07/2019-周报25/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/10/07/2019-周报25/" class="title">2019-周报25-试验结果与分析</a></p>
+                            <p class="item-date"><time datetime="2019-10-07T03:11:49.000Z" itemprop="datePublished">2019-10-07</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/weekly-report/">weekly-report</a><span class="tag-list-count">26</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/weekly-report/" style="font-size: 10px;">weekly-report</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fas fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2019 lee<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://yoursite.com/2019/12/07/2019-周报28/';
+        
+        this.page.identifier = '2019-周报28';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'lilei-blog' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

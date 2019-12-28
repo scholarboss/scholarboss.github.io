@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>2019-周报25-试验结果与分析 | lilei&#39;s blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="试验结果记录与分析1. classB 单个epoch（50帧）运行时间 训练：21s 测试：9s  2. x264结果 3. ClassE结果 4. 分析总结分析目前为止的BD情况，差的基本都是低码率的码流，按常规理解来说，码流的大小和传输的信息量是相关的。我们之前拟合帧数是以50帧为基准，按原始码流的像素信息决定拟合的帧数。按照 learning-to-remember 的思路，网络记住的是信息">
+<meta name="keywords" content="weekly-report">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2019-周报25-试验结果与分析">
+<meta property="og:url" content="http://yoursite.com/2019/10/07/2019-周报25/index.html">
+<meta property="og:site_name" content="lilei&#39;s blog">
+<meta property="og:description" content="试验结果记录与分析1. classB 单个epoch（50帧）运行时间 训练：21s 测试：9s  2. x264结果 3. ClassE结果 4. 分析总结分析目前为止的BD情况，差的基本都是低码率的码流，按常规理解来说，码流的大小和传输的信息量是相关的。我们之前拟合帧数是以50帧为基准，按原始码流的像素信息决定拟合的帧数。按照 learning-to-remember 的思路，网络记住的是信息">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2019/10/07/2019-周报25/week25-x264-result.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/07/2019-周报25/week25-classE-HM.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/07/2019-周报25/week25-BRCN.png">
+<meta property="og:image" content="http://yoursite.com/2019/10/07/2019-周报25/week25-FRVSR-NET.png">
+<meta property="og:updated_time" content="2019-10-12T07:56:35.721Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2019-周报25-试验结果与分析">
+<meta name="twitter:description" content="试验结果记录与分析1. classB 单个epoch（50帧）运行时间 训练：21s 测试：9s  2. x264结果 3. ClassE结果 4. 分析总结分析目前为止的BD情况，差的基本都是低码率的码流，按常规理解来说，码流的大小和传输的信息量是相关的。我们之前拟合帧数是以50帧为基准，按原始码流的像素信息决定拟合的帧数。按照 learning-to-remember 的思路，网络记住的是信息">
+<meta name="twitter:image" content="http://yoursite.com/2019/10/07/2019-周报25/week25-x264-result.png">
+    
+
+    
+        <link rel="alternate" href="/" title="lilei&#39;s blog" type="application/atom+xml" />
+    
+
+    
+        <link rel="icon" href="/images/favicon.ico" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-brands.min.css">
+    <link rel="stylesheet" href="/libs/font-awesome5/css/fa-solid.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">lilei&#39;s blog</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/shanks.png" />
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fas fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="Search" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/shanks.png" />
+            <h2 id="name">lilei</h2>
+            <h3 id="title">student &amp; manga lover</h3>
+            <span id="location"><i class="fas fa-map-marker-alt" style="padding-right: 5px"></i>xi&#39;an, China</span>
+            <a id="follow" target="_blank" href="https://github.com/scholar/">FOLLOW</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                29
+                <span>posts</span>
+            </div>
+            <div class="article-info-block">
+                1
+                <span>tag</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/scholar" target="_blank" title="github" class=tooltip>
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="twitter" class=tooltip>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="dribbble" class=tooltip>
+                            <i class="fab fa-dribbble"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fab fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-2019-周报25" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            2019-周报25-试验结果与分析
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fas fa-calendar-alt"></i>
+        <a href="/2019/10/07/2019-周报25/">
+            <time datetime="2019-10-07T03:11:49.000Z" itemprop="datePublished">2019-10-07</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/weekly-report/">weekly-report</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="试验结果记录与分析"><a href="#试验结果记录与分析" class="headerlink" title="试验结果记录与分析"></a>试验结果记录与分析</h1><h3 id="1-classB-单个epoch（50帧）运行时间"><a href="#1-classB-单个epoch（50帧）运行时间" class="headerlink" title="1. classB 单个epoch（50帧）运行时间"></a>1. classB 单个epoch（50帧）运行时间</h3><ul>
+<li>训练：21s</li>
+<li>测试：9s</li>
+</ul>
+<h3 id="2-x264结果"><a href="#2-x264结果" class="headerlink" title="2. x264结果"></a>2. x264结果</h3><p><img src="/2019/10/07/2019-周报25/week25-x264-result.png" alt="week25-x264-result"></p>
+<h3 id="3-ClassE结果"><a href="#3-ClassE结果" class="headerlink" title="3. ClassE结果"></a>3. ClassE结果</h3><p><img src="/2019/10/07/2019-周报25/week25-classE-HM.png" alt="week25-classE-HM"></p>
+<h3 id="4-分析总结"><a href="#4-分析总结" class="headerlink" title="4. 分析总结"></a>4. 分析总结</h3><p>分析目前为止的BD情况，差的基本都是低码率的码流，按常规理解来说，码流的大小和传输的信息量是相关的。我们之前拟合帧数是以50帧为基准，按原始码流的像素信息决定拟合的帧数。按照 <strong>learning-to-remember</strong> 的思路，网络记住的是信息，而非YUV数据占据的磁盘空间。现在正在初步试验根据码流确定拟合帧数的效果，相当于之前网络对不同码流都是拟合相同帧数，而现在加入了一个<strong><em>调度系统</em></strong> （熵调度？），根据实际码流确定拟合帧数。但是由于我们的试验涉及编码和网络训练，要确定一个好的调度方案需要很多时间，而我们现在没有足够的时间进行试验。</p>
+<h1 id="论文总结"><a href="#论文总结" class="headerlink" title="论文总结"></a>论文总结</h1><h3 id="BRCN-NIPS2015-amp-PAMI2018"><a href="#BRCN-NIPS2015-amp-PAMI2018" class="headerlink" title="BRCN (NIPS2015 &amp; PAMI2018)"></a>BRCN (NIPS2015 &amp; PAMI2018)</h3><blockquote>
+<p>Huang, Yan, Wei Wang, and Liang Wang. “Video super-resolution via bidirectional recurrent convolutional networks.” <em>IEEE transactions on pattern analysis and machine intelligence</em> 40.4 (2017): 1015-1028.</p>
+</blockquote>
+<blockquote>
+<p>Huang, Yan, Wei Wang, and Liang Wang. “Bidirectional recurrent convolutional networks for multi-frame super-resolution.” <em>Advances in Neural Information Processing Systems</em>. 2015.</p>
+</blockquote>
+<p>主要创新点在网络部分，相当于将RNN的结构使用了两次，一次从前往后，一次从后往前，最后重构的时候将两部分合并。</p>
+<p><img src="/2019/10/07/2019-周报25/week25-BRCN.png" alt="BRCN-NET-architecture"></p>
+<h3 id="FRVSR-CVPR2018"><a href="#FRVSR-CVPR2018" class="headerlink" title="FRVSR (CVPR2018)"></a>FRVSR (CVPR2018)</h3><blockquote>
+<p>Sajjadi, Mehdi SM, Raviteja Vemulapalli, and Matthew Brown. “Frame-recurrent video super-resolution.” <em>Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition</em>. 2018.</p>
+</blockquote>
+<ul>
+<li>网络输入有三个：当前帧小图，前一帧小图，前一帧超分图。输出一个：当前帧超分图</li>
+<li>将网络的输出信息利用了起来，把前一帧的修复结果利用起来修复当前帧，节省了计算量</li>
+<li>在光流对齐部分新增了损失函数，用来增强对齐效果</li>
+<li>使用subpixel的反操作，将大图分成多张小图当作输入</li>
+<li>单帧超分中，5个残差块增益基本到顶，再增加残差块效果提升也不明显了。多帧超分，增加网络深度，超分效果提升明显</li>
+</ul>
+<p><img src="/2019/10/07/2019-周报25/week25-FRVSR-NET.png" alt="FRVSR-NET-ARCHI"></p>
+<p>文章细节给得很详细，循环利用网络的输出信息，在光流对齐处加损失函数的做法也是比较新颖的，利用subpixel的反操作（space-to-depth）将大图变为小图再输入的方法也是第一见到，很值得借鉴。</p>
+<h3 id="YOLO-CVPR2016"><a href="#YOLO-CVPR2016" class="headerlink" title="YOLO (CVPR2016)"></a>YOLO (CVPR2016)</h3><blockquote>
+<p>Redmon, Joseph, et al. “You only look once: Unified, real-time object detection.” <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>. 2016.</p>
+</blockquote>
+<ul>
+<li><p>滑动窗口卷积 （sliding window approach）</p>
+</li>
+<li><p>之前的目标识别都是多步骤进行，先生成候选框，再识别框内物体。YOLO一步完成候选框与识别任务</p>
+<blockquote>
+<p>Using our system, you only look once (YOLO) at an image to predict what objects are present and where they are.</p>
+</blockquote>
+</li>
+<li><p>一次完成对整张图片目标的框定与识别</p>
+</li>
+<li><p>在同样的速度下，识别准确率是其它模型的两倍</p>
+</li>
+</ul>
+<p>论文比较复杂，没有细看，后面有时间再仔细研究一下</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2019/10/07/2019-周报25/" data-id="ck4pbg5lw0016e8u77n3nmzri" class="article-share-link"><i class="fas fa-share"></i>Share</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fab fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fab fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fab fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fab fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://yoursite.com/2019/10/07/2019-周报25/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yoursite.com/2019/10/07/2019-周报25/">Comments</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/10/20/2019-周报26/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Newer</strong>
+            <div class="article-nav-title">
+                
+                    2019-周报26
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/09/29/2019-周报24/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">Older</strong>
+            <div class="article-nav-title">2019-周报24</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">recent</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/12/22/2019-周报29/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/12/22/2019-周报29/" class="title">2019-周报29</a></p>
+                            <p class="item-date"><time datetime="2019-12-22T06:47:01.000Z" itemprop="datePublished">2019-12-22</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/12/07/2019-周报28/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/12/07/2019-周报28/" class="title">2019-周报28</a></p>
+                            <p class="item-date"><time datetime="2019-12-07T05:42:33.000Z" itemprop="datePublished">2019-12-07</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/11/27/2019-周报27/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/11/27/2019-周报27/" class="title">2019-周报27</a></p>
+                            <p class="item-date"><time datetime="2019-11-27T09:58:24.000Z" itemprop="datePublished">2019-11-27</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/10/20/2019-周报26/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/10/20/2019-周报26/" class="title">2019-周报26</a></p>
+                            <p class="item-date"><time datetime="2019-10-20T03:27:05.000Z" itemprop="datePublished">2019-10-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2019/10/07/2019-周报25/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/10/07/2019-周报25/" class="title">2019-周报25-试验结果与分析</a></p>
+                            <p class="item-date"><time datetime="2019-10-07T03:11:49.000Z" itemprop="datePublished">2019-10-07</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">archives</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">December 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">November 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">October 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">September 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">July 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">May 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">February 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tags</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/weekly-report/">weekly-report</a><span class="tag-list-count">26</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">tag cloud</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/weekly-report/" style="font-size: 10px;">weekly-report</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">links</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fas fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2019 lee<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://yoursite.com/2019/10/07/2019-周报25/';
+        
+        this.page.identifier = '2019-周报25';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'lilei-blog' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
